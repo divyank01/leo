@@ -3,10 +3,11 @@ package org.leo.serializer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.leo.exception.LeoSerializationException;
 
 public class JSONWriter {
 
@@ -22,19 +23,26 @@ public class JSONWriter {
 	}
 
 	private void makeJson(StringBuilder builder,Object obj) throws Exception{
-		builder.append("{");
-		int counter=0;
-		Field[] list=obj.getClass().getDeclaredFields();
-		for(Field field:list){
-			builder.append("\"");
-			builder.append(field.getName());
-			builder.append("\":");
-			getValueForObject(obj.getClass().getMethod(getterName(field.getName()), null),obj,builder);
-			counter++;
-			if(counter!=list.length)
-				builder.append(",");
+		String fieldName=null;
+		try{
+			builder.append("{");
+			int counter=0;
+			Field[] list=obj.getClass().getDeclaredFields();
+			for(Field field:list){
+				builder.append("\"");
+				builder.append(field.getName());
+				builder.append("\":");
+				fieldName=field.getName();
+				getValueForObject(obj.getClass().getMethod(getterName(field.getName()), null),obj,builder);
+				counter++;
+				if(counter!=list.length)
+					builder.append(",");
+			}
+			builder.append("}");
+		}catch(NoSuchMethodException ex){
+			throw new LeoSerializationException("Getter not available for field "
+					+fieldName+" or "+obj.getClass().getCanonicalName()+" is not a pojo");
 		}
-		builder.append("}");
 	}
 
 	private void getValueForObject(Method method, Object obj1, StringBuilder builder) throws Exception{

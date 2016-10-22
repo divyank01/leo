@@ -1,18 +1,20 @@
 package org.leo.rest.service;
 
-import java.util.StringTokenizer;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.leo.serializer.JSONWriter;
 
-import com.pojos.Product;
-import com.sun.org.apache.xerces.internal.impl.dv.dtd.NMTOKENDatatypeValidator;
-
 public class ServiceHandler {
 
 	private static ServiceHandler handler;
+	private JSONWriter writer=new JSONWriter();
 	protected ServiceHandler(){}
 
 	public static ServiceHandler getHandler(){
@@ -21,12 +23,35 @@ public class ServiceHandler {
 		return ServiceHandler.handler;
 	}
 
-	public void handle(HttpServletRequest req,HttpServletResponse resp){
+	public void handle(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		try{
+			resp.reset();
 			Object output=ServiceExecutor.getExecuter().execute(getServiceDetails(req));
-			JSONWriter writer=new JSONWriter();
-			resp.getOutputStream().print(writer.getJson(output));
+			if(output!=null && !(output instanceof File)){
+				String json=writer.getJson(output); 
+				resp.setBufferSize(json.length());
+				resp.getOutputStream().print(json);
+			}else if(output!=null && (output instanceof File || output instanceof InputStream)){
+				if(output instanceof File){//from FS
+					File file=(File)output;
+					FileInputStream fis=new FileInputStream(file);
+					int data=-20;
+					while((data=fis.read())!=-1)
+						resp.getOutputStream().write(data);
+					fis.close();
+				}
+				if(output instanceof InputStream){//getting data from data base blob
+					InputStream is=(InputStream)output;
+					int data=-20;
+					while((data=is.read())!=-1)
+						resp.getOutputStream().write(data);
+					is.close();
+				}
+			}else{
+				resp.sendError(404);
+			}
 		}catch(Exception e){
+			resp.sendError(500);
 			e.printStackTrace();
 		}
 	}

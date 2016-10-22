@@ -27,7 +27,7 @@ public class LeoServlet extends HttpServlet{
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		serviceHandler.handle(req,resp);
+			serviceHandler.handle(req,resp);
 	}
 	
 	@Override

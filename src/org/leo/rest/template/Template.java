@@ -7,6 +7,7 @@ public class Template {
 
 	private String className;
 	private String serviceName;
+	private int depth;
 	private Map<String, String> mapping=new HashMap<String,String>();
 	
 	public Template(String className, String serviceName) {
@@ -31,5 +32,11 @@ public class Template {
 	}
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
+	}
+	public int getDepth() {
+		return depth;
+	}
+	public void setDepth(int depth) {
+		this.depth = depth;
 	}
 }
