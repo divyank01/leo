@@ -9,7 +9,9 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.leo.exception.LeoSerializationException;
 import org.leo.serializer.JSONWriter;
+import org.leo.serializer.LeoSerializable;
 
 public class ServiceHandler {
 
@@ -27,10 +29,16 @@ public class ServiceHandler {
 		try{
 			resp.reset();
 			Object output=ServiceExecutor.getExecuter().execute(getServiceDetails(req));
+
 			if(output!=null && !(output instanceof File)){
-				String json=writer.getJson(output); 
-				resp.setBufferSize(json.length());
-				resp.getOutputStream().print(json);
+				if(output instanceof LeoSerializable){
+					String json=writer.getJson(output); 
+					resp.setBufferSize(json.length());
+					resp.getOutputStream().print(json);
+				}else{
+					throw new LeoSerializationException("Can not serialize "
+							+output.getClass().getCanonicalName()+" leaSeriazable not implemented");
+				}
 			}else if(output!=null && (output instanceof File || output instanceof InputStream)){
 				if(output instanceof File){//from FS
 					File file=(File)output;
