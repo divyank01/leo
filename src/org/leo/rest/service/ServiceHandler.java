@@ -1,6 +1,5 @@
 package org.leo.rest.service;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,7 +38,7 @@ public class ServiceHandler {
 					resp.getOutputStream().print(json);
 				}else{
 					throw new LeoSerializationException("Can not serialize "
-							+output.getClass().getCanonicalName()+" leaSeriazable not implemented");
+							+output.getClass().getCanonicalName()+" leoSeriazable not implemented");
 				}
 			}else if(output!=null && (output instanceof File || output instanceof InputStream)){
 				if(output instanceof File){//from FS
@@ -71,8 +70,9 @@ public class ServiceHandler {
 	}
 
 	private String[] getServiceDetails(HttpServletRequest req){
-		String uri=req.getRequestURI(); 
-		String releventPath=uri.replaceFirst(req.getContextPath()+req.getServletPath(), "");
+		//String uri=req.getPathInfo(); 
+		String releventPath=req.getPathInfo();//uri.replaceFirst(req.getContextPath()+req.getServletPath(), "");
+		//System.out.println(req.getPathInfo()+"\n"+req.getPathTranslated());
 		String temp=releventPath.replaceFirst("/", "");
 		String serviceName=temp.substring(0, temp.indexOf("/"));
 		String[] service={serviceName,releventPath};

@@ -14,7 +14,7 @@ import org.leo.rest.template.TemplateCollector;
 public class ServiceExecutor {
 
 	private static ServiceExecutor executor;
-	
+
 	private Map serviceParams=null;
 
 	protected Map getServiceParams() {
@@ -32,7 +32,9 @@ public class ServiceExecutor {
 	protected Object execute(String[] serviceDetails)throws Exception{
 		Template template=null;
 		template=TemplateCollector.getTemplate(serviceDetails[0]);
-		return _execute(template,serviceDetails[1]);
+		if(template!=null)
+			return _execute(template,serviceDetails[1]);
+		throw new ServiceUnavailableException("template not found for service "+serviceDetails[0]);
 	}
 
 	private Object _execute(Template template,String mappingUrl)throws Exception{
