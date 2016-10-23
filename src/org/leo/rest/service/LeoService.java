@@ -14,4 +14,8 @@ public class LeoService {
 		return ctx.getCloneParameters();
 	}
 	
+	protected void updateServiceContext(ServiceExecutor exec){
+		this.ctx.setParams(exec.getServiceParams());
+	}
+	
 }

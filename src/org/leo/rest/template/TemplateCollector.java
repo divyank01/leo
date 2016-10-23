@@ -15,8 +15,8 @@ public class TemplateCollector {
 		TemplateCollector.mapping.add(url, methodName);
 	}
 	
-	public static String getMethod(String url,int depth){
-		return TemplateCollector.mapping.getMethod(url,depth);
+	public static String getMethod(String url){
+		return TemplateCollector.mapping.getMethod(url);
 	}
 	
 	public static boolean isLoaded(){

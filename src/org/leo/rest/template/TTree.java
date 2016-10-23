@@ -46,29 +46,31 @@ public class TTree {
 		}
 	}
 	
-	public String getMethod(String url,int depth){
+	public String getMethod(String url){
+		int count=0;
 		StringTokenizer tokenizer=new StringTokenizer(url, "/");
 		Node currentNode=root;
 		Node prevNode=null;
 		String bestMatch=null;
-		depth=0;
+		int depth=0;
 		while (tokenizer.hasMoreElements()) {
 			String token = (String) tokenizer.nextElement();
 			currentNode=currentNode.getChildren().get(token);
-			if(currentNode!=null && currentNode.getValue()!=null){
+			if(currentNode!=null && currentNode.getValue()!=null && count!=0){
 				bestMatch=currentNode.getValue();
 				depth=currentNode.getDepth();
 			}
-			if(currentNode==null){
+			if(currentNode==null && count!=0){
 				if(prevNode!=null){
 					depth=prevNode.getDepth();
-					return prevNode.getValue();
+					return prevNode.getValue()+":"+depth;
 				}else
 					break;
 			}
 			prevNode=currentNode;
+			count++;
 		}
-		return bestMatch;
+		return bestMatch+":"+depth;
 	}
 	
 	private class Node{

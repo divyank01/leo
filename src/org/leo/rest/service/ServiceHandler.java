@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +33,7 @@ public class ServiceHandler {
 			Object output=ServiceExecutor.getExecuter().execute(getServiceDetails(req));
 
 			if(output!=null && !(output instanceof File)){
-				if(output instanceof LeoSerializable){
+				if(isValid(output)){
 					String json=writer.getJson(output); 
 					resp.setBufferSize(json.length());
 					resp.getOutputStream().print(json);
@@ -62,6 +64,10 @@ public class ServiceHandler {
 			resp.sendError(500);
 			e.printStackTrace();
 		}
+	}
+
+	private boolean isValid(Object output) {		
+		return output instanceof LeoSerializable || output instanceof List || output instanceof Map || output.getClass().isArray();
 	}
 
 	private String[] getServiceDetails(HttpServletRequest req){

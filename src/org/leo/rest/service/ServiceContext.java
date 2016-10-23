@@ -14,4 +14,8 @@ public class ServiceContext {
 	protected Map<? extends Number, Object> getParameters(){
 		return this.serviceParm;
 	}
+	
+	protected void setParams(Map m){
+		serviceParm=(HashMap<? extends Number, Object>) m;
+	}
 }
