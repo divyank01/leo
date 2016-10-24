@@ -10,5 +10,4 @@ import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 @Target({java.lang.annotation.ElementType.METHOD})
 public @interface Path {
 	public String urlPath();
-	public int inputCount() default 0; 
 }
