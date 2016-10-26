@@ -1,6 +1,7 @@
 package org.leo.rest.service;
 
 import java.lang.reflect.Method;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -11,13 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.leo.rest.template.Template;
 import org.leo.rest.template.TemplateCollector;
 
-
 public class ServiceExecutor {
 
 	private static ServiceExecutor executor;
 
 	private Map serviceParams=null;
 	private Map<String,String[]> aParam=null;
+	SpringBeansHandler springHandler=SpringBeansHandler.getHandler();
 
 	protected Map getServiceParams() {
 		return serviceParams;
@@ -46,14 +47,22 @@ public class ServiceExecutor {
 	private Object _execute(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
 		this.serviceParams=new HashMap<>();
 		this.aParam=new HashMap<>();
-		Class service=Class.forName(template.getClassName());
+		
 		String[] data=TemplateCollector.getMethod(mappingUrl).split(":");
-		LeoService instance=(LeoService)service.newInstance();//make a service bean factory
 		if(data[0]!=null && !data[0].equals("null") && !data[0].isEmpty()){
-			Method method=service.getDeclaredMethod(data[0],null);
 			StringTokenizer tokenizer=new StringTokenizer(mappingUrl, "/");
 			int count=0;
 			int i=0;
+			Class service=null;
+			LeoService instance=null;
+			if(!isSpringCtxAvailable(req)){
+				service=Class.forName(template.getClassName());
+				instance=(LeoService)service.newInstance();//make a service bean factory
+			}else{
+				instance=springHandler.getServiceBean(req, template.getServiceName());
+				service=instance.getClass();
+			}
+			Method method=service.getDeclaredMethod(data[0],null);
 			while(tokenizer.hasMoreTokens()){
 				count++;
 				String token=tokenizer.nextToken();
@@ -75,5 +84,9 @@ public class ServiceExecutor {
 		String serviceName=temp.substring(0, temp.indexOf("/"));
 		String[] service={serviceName,releventPath};
 		return service;
+	}
+	
+	private boolean isSpringCtxAvailable(HttpServletRequest req) {
+		return req.getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT")==null?false:true;
 	}
 }
