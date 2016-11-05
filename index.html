@@ -10,9 +10,9 @@
 
 <!-- Note there is no responsive meta tag here -->
 
-<link rel="icon" href="../../favicon.ico">
+<link rel="icon" href="favicon.ico">
 
-<title>Blow-Home</title>
+<title>Leo-Home</title>
 
 <!-- Bootstrap core CSS -->
 <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
@@ -43,10 +43,12 @@
 		document.getElementById("docs").style.display = "none";
 	}
 </script>
+
+<link rel="icon" href="icon.png">
 </head>
 
 <body>
-  
+
 	<!-- Fixed navbar -->
 	<nav class="navbar navbar-default" style="max-height: 40px;">
 		<div class="container ">
@@ -91,29 +93,31 @@
 	</nav>
 
 	<div class="container" id="main">
-		<div class="page-header">
-			<h1>BLOW-ORM</h1>
-			<p class="lead">Framework for REST api.</p>
+		<div class="page-header container">
+		<div class="row">
+		<div class="col-sm-3">
+		<svg height="100" width="200">
+  <polygon points="100,0,200,50,100,100,0,50" style="fill:#FFC200;" />
+<!-- <path d="M0 0 H 200 V 100 H 0 Z" fill="transparent" stroke="black"/> -->
+<text fill="#ffffff" font-size="45" font-family="monospace" x="60" y="65">
+  leo
+</text>
+</svg></div>
+			<div class="col-sm-9">
+			<h1>Leo</h1>
+			<p class="lead">Framework for REST api.</p></div>
 		</div>
-
+</div>
 		<h3>Features</h3>
-		<p>Some of the important features of the ORM are are mentioned
+		<p>Some of the important features of the Leo are are mentioned
 			below:
 		<ul>
-			<li>Generates efficient queries.</li>
-			<li>Understands relationships between classes.</li>
-			<li>Supports both annotation based as well as xml based
-				mappings.</li>
-			<li>Given the XML mappings can generate POJOs.</li>
-			<li>Fetch data based on relationship and can be modified.</li>
-			<li>Generate queries for basic insert update delete and select
-				operations.</li>
+			<li>Supports DES based authentication of tokens.</li>
+			<li>Able to serve textual and multimedia contents.</li>
+			<li>Spring integration for service.</li>
+			<li>User customizable authenticator.</li>
 			<li>No dependency on any other external library.</li>
-			<li>Provides query logging.</li>
-			<li>Able to sync in database structure with mapping.</li>
-			<li>Pooling heavy objects for faster run times.</li>
-			<li>Able to run queries saved in XMLs with logical operations.</li>
-			<li>Partial query caching.</li>
+			<li>Currently tested on apache tomcat.</li>
 		</ul>
 		</p>
 
@@ -133,284 +137,155 @@
 			container width of 970px and a viewport of 800px, you'll potentially
 			hide 170px of content.
 		</p> -->
-		<p>There is no way around this as it's default browser behavior.
-			The only solution is a responsive layout or using a non-fixed
-			element.</p>
+		<p>Leo is designed taking under consideration of easy service development.
+		
+		</p>
 
-		<h3>Configuration</h3>
-		<p>Configuration of ORM is simple and verbose in order to
-			configure first create a configuration xml file named as
-			BLOW-ORM-CONFIG.xml and place it in the classpath BLOW will look up
-			this file in classpath only it can not be placed anywhere else
-			currently.</p>
+		<h3>Minimal configuration</h3>
+		<p>Configuration of Leo is simple in order to
+			configure first setup web.xml file and install LeoServlet in it.</p>
 		<p>A sample configuration file is posted below.</p>
 
 
 		<pre>
 			<code>
-&lt;JDBCConnection 
-	xmlns="http://www.BlowORM.org/BlowConf"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd"&gt;
-	
-	&lt;!-- basic configs --&gt;
-	&lt;URL&gt;jdbc:oracle:thin:@localhost:1521:xe&lt;/URL&gt;
-	&lt;PASSWORD&gt;pwd&lt;/PASSWORD&gt;
-	&lt;USER&gt;username&lt;/USER&gt;
-	
-	&lt;!-- Oracle10g driver class --&gt;
-	&lt;!-- &lt;JDBCDriver&gt;oracle.jdbc.driver.OracleDriver&lt;/JDBCDriver&gt; --&gt;
-	
-	&lt;!-- Oracle11g driver class --&gt;
-	&lt;JDBCDriver&gt;oracle.jdbc.OracleDriver&lt;/JDBCDriver&gt;
-	
-	&lt;QUERIES&gt;
-	    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
-	    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
-	&lt;/QUERIES&gt;
-	
-	&lt;!-- mappings --&gt;
-	&lt;MAPPINGS file="com/sales/xmls/first.blow.xml" /&gt;
-	&lt;MAPPINGS file="com/sales/xmls/second.blow.xml" /&gt;
-	&lt;!-- &lt;MAPPINGS file="com/sales/xmls/three.blow.xml"/&gt; --&gt;
-	
-	&lt;!-- config annotation --&gt;
-	&lt;ANNOTATIONS use="false"&gt;
-	    &lt;package-scan&gt;com.sales.pojo&lt;/package-scan&gt;
-	    &lt;package-scan&gt;com.customer.pojo&lt;/package-scan&gt;
-	&lt;/ANNOTATIONS&gt;
-	
-	&lt;!-- multiple schema can be mentioned for loading tables separated by comma --&gt;
-	&lt;Schema&gt;DIVYANK&lt;/Schema&gt;
-	
-	&lt;!-- generate schema --&gt;
-	&lt;GenerateSchema&gt;false&lt;/GenerateSchema&gt;
-	
-	&lt;SqlLogging&gt;true&lt;/SqlLogging&gt;
-&lt;/JDBCConnection&gt;
+	&lt;servlet&gt;
+		&lt;servlet-name&gt;leo&lt;/servlet-name&gt;
+		&lt;servlet-class&gt;org.leo.rest.servlet.LeoServlet&lt;/servlet-class&gt;
+		&lt;init-param&gt;
+			&lt;param-name&gt;packageName&lt;/param-name&gt;
+			&lt;param-value&gt;com.service&lt;/param-value&gt;
+		&lt;/init-param&gt;
+		&lt;load-on-startup&gt;0&lt;/load-on-startup&gt;
+	&lt;/servlet&gt;
+
+	&lt;servlet-mapping&gt;
+		&lt;servlet-name&gt;leo&lt;/servlet-name&gt;
+		&lt;url-pattern&gt;/rest/*&lt;/url-pattern&gt;
+	&lt;/servlet-mapping&gt;
 </code>
 		</pre>
-		<p>
-			<strong>JDBCConnection:</strong>Its the root element for
-			configuration file and contains details to make JDBC connections and
-		</p>
-		<p>
-			<strong >URL:</strong>Connection url for the
-			database
-		</p>
-		<p>
-			<strong>PASSWORD:</strong>login credentials
-		</p>
-		<p>
-			<strong>USER:</strong>login credentials.
-		</p>
-		<p>
-			<strong>JDBCDriver:</strong>Represents the jdbc
-			driver class given the different drivers different database
-			connections can be made.
-		</p>
-		<p>
-			<strong>QUERIES:</strong>It will take query xml
-			location. for more info <a href="#queries">goto queries</a>.
-		</p>
-		<p>
-			<strong>MAPPINGS:</strong>It will take mapping
-			xml location. for more info <a href="#mapping">goto mapping</a>.
-		</p>
-		<p>
-			<strong>ANNOTATIONS:</strong>Boolean field that
-			will will enable annotation mapping mode this will override XML
-			mapping.
-		</p>
-		<p>
-			<strong>GenerateSchema:</strong>Boolean field
-			that will sync the tables and sequence to pojos or create database
-			component if not present.
-		</p>
-		<p>
-			<strong>SqlLogging:</strong>It will turn on the
-			query logging on console currently it can not output queries to
-			external log file.
-		</p>
 
-		<h3 id="mapping">Mappings</h3>
-		<p>Supports following two types of mapping:
-		<ul>
-			<li>XML mapping</li>
-			<li>Annotaion mapping</li>
-		</ul>
-		<p>
-			XML based mapping is the default way of mapping java classes with
-			database tables. To achieve this first you need to create a xml file
-			like
-			<code>*.blow.xml</code>
-			. For creating this XML file standard is to use
-			<code>com.sales.xmls.Mapping.xsd</code>
-			schema file. A sample mapping xml is given below.
-		</p>
+		<h3 id="mapping">Spring integration</h3>
+		<p>Spring integration is like the following:
 		<pre>
 			<code>
-&lt;Mappings xmlns="http://www.blow.org/Mapping"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.blow.org/Mapping ../../../../../BlowORM/src/com/sales/xmls/Mapping.xsd"&gt;
-	&lt;Mapping&gt;
-	    &lt;Class&gt;com.sales.pojo.Product&lt;/Class&gt;
-	    &lt;RDBSchema&gt;product&lt;/RDBSchema&gt;
-	    &lt;Map&gt;
-	        &lt;Property name="id" type="int" colName="id"
-	            primary-key="true" length="5" generated="true" seq="product_seq" /&gt;
-	        &lt;Property name="name" type="String" colName="name"
-	            length="50" /&gt;
-	        &lt;Property name="catId" type="long" colName="cat_id" length="5"/&gt;
-	        &lt;one-2-one name="details" ref-class="com.sales.pojo.ProductDetails"
-	            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
-	        &lt;one-2-one name="stock" ref-class="com.sales.pojo.Stock"
-	            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
-	        &lt;one-2-one name="epd"
-	            ref-class="com.sales.pojo.ElectronicProductDetails" foreign-key="PROD_ID"
-	            foreign-key-ref="true" cascade="delete"/&gt;
-	        &lt;one-2-many ref-class="com.sales.pojo.Stock" name="stocks"
-	            foreign-key="PROD_ID" collectionType="list" foreign-key-ref="true" cascade="delete"/&gt;
-	    &lt;/Map&gt;
-	&lt;/Mapping&gt;
-	
-	&lt;Mapping&gt;
-	    &lt;Class&gt;com.sales.pojo.ProductDetails&lt;/Class&gt;
-	    &lt;RDBSchema&gt;product_details&lt;/RDBSchema&gt;
-	    &lt;Map&gt;
-	        &lt;Property name="id" type="int" colName="id" length="5"
-	            primary-key="true" generated="true" seq="PD_SEQ" /&gt;
-	        &lt;!-- &lt;Property name="prodId" type="int" length="5" colName="PROD_ID"/&gt; --&gt;
-	        &lt;Property name="brand" type="String" colName="BRAND"
-	            length="100" /&gt;
-	        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
-	        &lt;Property name="productSize" type="String" colName="PROD_SIZE" length="50"/&gt;
-	        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
-	        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
-	        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product" cascade="delete"
-	            foreign-key="PROD_ID" /&gt;
-	    &lt;/Map&gt;
-	&lt;/Mapping&gt;
-	&lt;Mapping&gt;
-	    &lt;Class&gt;com.sales.pojo.ElectronicProductDetails&lt;/Class&gt;
-	    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS&lt;/RDBSchema&gt;
-	    &lt;Map&gt;
-	        &lt;Property name="id" type="int" colName="id"
-	            primary-key="true" generated="true" seq="EPD_SEQ" length="5"/&gt;
-	        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
-	        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
-	        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
-	        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
-	        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
-	        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
-	        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
-	        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
-	            foreign-key="PROD_ID" /&gt;
-	    &lt;/Map&gt;
-	&lt;/Mapping&gt;
-	
-	&lt;Mapping&gt;
-	    &lt;Class&gt;com.sales.pojos.ElectronicProductDetails&lt;/Class&gt;
-	    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS_NEW&lt;/RDBSchema&gt;
-	    &lt;Map&gt;
-	        &lt;Property name="id" type="int" colName="id"
-	            primary-key="true" generated="true" seq="EPD_SEQ_NEW" length="5"/&gt;
-	        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
-	        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
-	        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
-	        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
-	        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
-	        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
-	        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
-	        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
-	            foreign-key="ID" /&gt;
-	    &lt;/Map&gt;
-	&lt;/Mapping&gt;
-&lt;/Mappings&gt;
+	&lt;context-param&gt;
+		&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+		&lt;param-value&gt;/WEB-INF/applicationContext.xml&lt;/param-value&gt;
+	&lt;/context-param&gt;
+
+	&lt;listener&gt;
+		&lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+	&lt;/listener&gt; 
 			</code>
 			</pre>
 		</p>
 
-		<p>Annotation based mapping can be used in the following way.
-			Currently blow does not support JPA annotation it has its own
-			annotation to use. Annotations only works on class and fields and not
-			on methods.
+
+<h3 id="mapping">Service</h3>
+		<p>Service class will be recognized only if resides in correct package provided in config.
 		<pre>
 			<code>
-import com.sales.blow.annotations.BlowId;
-import com.sales.blow.annotations.BlowProperty;
-import com.sales.blow.annotations.BlowSchema;
-import com.sales.blow.annotations.One2Many;
-import com.sales.blow.annotations.One2One;
+package com.service;
 
-@BlowSchema(schemaName="PRODUCT")
-public class Prodcty {  
-    
-    @BlowId(generated=true,seq="product_seq")
-    @BlowProperty(columnName="ID")
-    public int id;
-    
-    @BlowProperty(columnName="NAME",length=50)
-    private String name;
-    
-    @BlowProperty(columnName="CAT_ID")
-    private long catId;
-    
-    @One2One(fk="PROD_ID",isReferenced=true)
-    private ProductDetails details;
-    
-    @One2One(fk="PROD_ID",isReferenced=true)
-    private ElectronicProductDetails epd;
-    
-    @One2One(fk="PROD_ID",isReferenced=true)
-    private Stock stock;
-    
-    @One2Many(collectionType="java.util.List",fk="PROD_ID",type="com.sales.pojo.Stock")
-    private List&lt;Stock&gt; stocks;
-    
-    public int getId() {
-    return id;
-    }
-    public void setId(int id) {
-    this.id = id;
-    }
-    public String getName() {
-    return name;
-    }
-    public void setName(String name) {
-    this.name = name;
-    }
-    public long getCatId() {
-    return catId;
-    }
-    public void setCatId(long price) {
-    this.catId = price;
-    }
-    public ProductDetails getDetails() {
-        return details;
-    }
-    public void setDetails(ProductDetails details) {
-    this.details = details;
-    }
-    public ElectronicProductDetails getEpd() {
-    return epd;
-    }
-    public void setEpd(ElectronicProductDetails epd) {
-    this.epd = epd;
-    }
-    public Stock getStock() {
-    return stock;
-    }
-    public void setStock(Stock stock) {
-    this.stock = stock;
-    }
-    public List&lt;Stock&gt; getStocks() {
-    return stocks;
-    }
-    public void setStocks(List&lt;Stock&gt; stocks) {
-    this.stocks = stocks;
-    }
-}</code>
+
+
+@Service(name="ProductProvider")
+public class ProductProvider extends LeoService{
+
+	@Path(urlPath="/product/")
+	public int getProduct(){
+		return 2000;
+	}
+	
+	
+	@Path(urlPath="/product/electronics")
+	public List getElectronicProducts(){
+		Prodcty p3=new Prodcty();
+		List list=new ArrayList();
+		list.add(p3);
+		return list;
+	}
+	
+	/*
+	 * 
+	 * While returning an object in order for it to be serialize 
+	 * it need to implements org.leo.serializer.LeoSerializable
+	 * 		        OR
+	 * instance of File,InputStream,Array,List or Map
+	 * While returning collection objects should be of above types
+	 * 
+	 */
+	@Path(urlPath="/product/all")
+	public Product getAllProduct(){
+		return null;
+	}
+	
+	@Path(urlPath="/product/prodId")
+	public File getProductById(){
+		Blob blob =null;
+		File file=new File("abc.jpg");
+		return file;
+	}
+	
+}
+</code>
+		</pre>
+		</p>
+		
+		<h3 id="mapping">Authentication</h3>
+		<p>Setup config as shown below.
+		<pre>
+			<code>
+	&lt;servlet&gt;
+		&lt;servlet-name&gt;leo&lt;/servlet-name&gt;
+		&lt;servlet-class&gt;org.leo.rest.servlet.LeoServlet&lt;/servlet-class&gt;
+		&lt;init-param&gt;
+			&lt;param-name&gt;packageName&lt;/param-name&gt;
+			&lt;param-value&gt;com.service&lt;/param-value&gt;
+		&lt;/init-param&gt;
+		
+		&lt;!-- Set up custom authenticator for authtoken --&gt;
+		&lt;init-param&gt;
+			&lt;param-name&gt;authenticator&lt;/param-name&gt;
+			&lt;param-value&gt;com.abc.SampleAuthenticator&lt;/param-value&gt;
+		&lt;/init-param&gt;
+		
+		&lt;!-- location for key file --&gt;
+		&lt;init-param&gt;
+			&lt;param-name&gt;keyFile&lt;/param-name&gt;
+			&lt;param-value&gt;keyFile&lt;/param-value&gt;
+		&lt;/init-param&gt;
+		&lt;load-on-startup&gt;0&lt;/load-on-startup&gt;
+	&lt;/servlet&gt;
+
+	&lt;servlet-mapping&gt;
+		&lt;servlet-name&gt;leo&lt;/servlet-name&gt;
+		&lt;url-pattern&gt;/rest/*&lt;/url-pattern&gt;
+	&lt;/servlet-mapping&gt;
+</code>
+		</pre>
+		
+		The custom authenticator class can help user to validate incoming token.<br/>
+		It is optional to implement an authenticator if not given it will be construed as the will be no auth token for the services.<br/>
+		Token in the incoming message initially be encrypted and before passing to authenticator it will be decrypted.<br/>
+		An example of custom authenticator is given below.<br/><br/>
+		<pre>
+			<code>
+	package com.abc;
+
+	import org.leo.rest.auth.Authenticator;
+	
+	public class SampleAuthenticator implements Authenticator{
+	
+		@Override
+		public boolean validate(String auth) {
+			dao.validateUserId(auth);
+			return true;
+		}
+	}
+</code>
 		</pre>
 		</p>
 
