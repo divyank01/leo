@@ -1,68 +1,108 @@
 package org.leo.client;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.util.Iterator;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class LeoClient {
 
 	private String hostName;
-	
-	public void send(){
-		
+
+	public static void main(String[] args){
+		LeoClient client=new LeoClient();
+		try {
+			LeoRequest req=new LeoRequest();
+			req.setUrl("http://localhost:8080/LeoTest/rest/ProductProvider/product/electronics/");
+			req.setMethod("GET");
+			req.getAttributeMap().put("authkey", "some key");
+			req.getHeader().put("some in head", "thug life");
+			client.senRecieve(req);
+		}  catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
+	public void send(){
+
+	}
+
 	public LeoClient addAttribute(Object input){
 		return this;
 	}
-	
-	public LeoClient getClientFor(String inputUrl) throws MalformedURLException, IOException{
-		URL url = new URL(inputUrl);
 
-	    // instantiate the HttpURLConnection with the URL object - A new
-	    // connection is opened every time by calling the openConnection
-	    // method of the protocol handler for this URL.
-	    // 1. This is the point where the connection is opened.
-	    HttpURLConnection connection = (HttpURLConnection) url
-	            .openConnection();
-	    // set connection output to true
-	    connection.setDoOutput(true);
-	    // instead of a GET, we're going to send using method="POST"
-	    connection.setRequestMethod("POST");
+	private void senRecieve(LeoRequest req) throws Exception {
+		URL obj = new URL(req.getUrl());
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		con.setRequestMethod(req.getMethod());
+		Iterator<String> itr=req.getAttributeMap().keySet().iterator();
+		while(itr.hasNext()){
+			String key=itr.next();
+			con.setRequestProperty(key, req.getAttributeMap().get(key));
+		}
+		int responseCode = con.getResponseCode();
+		System.out.println("\nSending 'GET' request to URL : " + req.getUrl());
+		System.out.println("Response Code : " + responseCode);
 
-	    // instantiate OutputStreamWriter using the output stream, returned
-	    // from getOutputStream, that writes to this connection.
-	    // 2. This is the point where you'll know if the connection was
-	    // successfully established. If an I/O error occurs while creating
-	    // the output stream, you'll see an IOException.
-	    OutputStreamWriter writer = new OutputStreamWriter(
-	            connection.getOutputStream());
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
 
-	    // write data to the connection. This is data that you are sending
-	    // to the server
-	    // 3. No. Sending the data is conducted here. We established the
-	    // connection with getOutputStream
-	    writer.write("message=");
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
 
-	    // Closes this output stream and releases any system resources
-	    // associated with this stream. At this point, we've sent all the
-	    // data. Only the outputStream is closed at this point, not the
-	    // actual connection
-	    writer.close();
-	    // if there is a response code AND that response code is 200 OK, do
-	    // stuff in the first if block
-	    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-	        // OK
+		//print result
+		System.out.println(response.toString());
 
-	        // otherwise, if any other status code is returned, or no status
-	        // code is returned, do stuff in the else block
-	    } else {
-	        // Server returned HTTP error code.
-	    }
-		return this;
 	}
-	
+
+	// HTTP POST request
+	private void sendPost() throws Exception {
+
+		String url = "https://selfsolve.apple.com/wcResults.do";
+		URL obj = new URL(url);
+		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+		//add reuqest header
+		con.setRequestMethod("POST");
+		con.setRequestProperty("User-Agent", "");
+		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+		String urlParameters = "sn=C02G8416DRJM&cn=&locale=&caller=&num=12345";
+
+		// Send post request
+		con.setDoOutput(true);
+		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		wr.writeBytes(urlParameters);
+		wr.flush();
+		wr.close();
+
+		int responseCode = con.getResponseCode();
+		System.out.println("\nSending 'POST' request to URL : " + url);
+		System.out.println("Post parameters : " + urlParameters);
+		System.out.println("Response Code : " + responseCode);
+
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
+
+		//print result
+		System.out.println(response.toString());
+
+	}
+
 }

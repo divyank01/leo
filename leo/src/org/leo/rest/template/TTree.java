@@ -28,6 +28,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+/**
+ * Its a basic implementation of tries.
+ * @author divyank
+ *
+ */
 public class TTree {
 
 	private Node root;
@@ -96,7 +101,7 @@ public class TTree {
 			prevNode=currentNode;
 			count++;
 		}
-		return bestMatch+":"+depth;
+		return bestMatch+COLON+depth;
 	}
 	
 	private class Node{

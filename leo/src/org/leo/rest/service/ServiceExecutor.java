@@ -24,6 +24,7 @@
   */
 package org.leo.rest.service;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.StringTokenizer;
 import javax.naming.ServiceUnavailableException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.leo.rest.annotations.Get;
 import org.leo.rest.template.Template;
 import org.leo.rest.template.TemplateCollector;
 
@@ -95,6 +97,7 @@ public class ServiceExecutor {
 					i++;
 				}
 			}
+			Get[] get=method.getAnnotationsByType(Get.class);
 			this.aParam=req.getParameterMap();
 			instance.updateServiceContext(this);
 			return method.invoke(instance, null);
