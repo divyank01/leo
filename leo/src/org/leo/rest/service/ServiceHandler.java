@@ -107,7 +107,12 @@ public class ServiceHandler {
 	}
 
 	private boolean isValid(Object output) {		
-		return output instanceof LeoSerializable || output instanceof List || output instanceof Map || output.getClass().isArray();
+		return output instanceof LeoSerializable ||
+				output instanceof List || 
+				output instanceof Map || 
+				output.getClass().isArray() || 
+				output instanceof String || 
+				output instanceof Number;
 	}
 
 	private boolean validate(HttpServletRequest req) throws Exception{
@@ -129,6 +134,16 @@ public class ServiceHandler {
 	public final void load(){
 		this.authClass=this.config.getInitParameter("authenticator");
 		this.keyFile=this.config.getInitParameter("keyFile");
+		String logging=this.config.getInitParameter("logging");
+		if(logging!=null || !logging.isEmpty()){
+			String[] logDetails=logging.trim().split(":");
+			boolean enabled=Boolean.valueOf(logDetails[0]);
+			if(enabled && logDetails.length>1){
+				System.setProperty("leoLogAppender", logDetails[1]);
+				if(logDetails.length>2)
+					System.setProperty("leoLogFolder", logDetails[2]);
+			}
+		}
 	}
 
 	private boolean isAuthReq() throws Exception{

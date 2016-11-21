@@ -28,11 +28,8 @@ import java.util.Map;
 
 public class LeoService {
 
-	private ServiceContext ctx;
+	private final ServiceContext ctx=null;
 	
-	{
-		ctx=new ServiceContext();
-	}
 	
 	/**
 	 * After decoding uri for service methods remaining uri converted to hashmap based on index
@@ -50,10 +47,6 @@ public class LeoService {
 	public final Map<String,String[]> getParams(){
 		return ctx.getCloneAppendedParams();
 	}
-	
-	protected final void updateServiceContext(ServiceExecutor exec){
-		this.ctx.setParams(exec.getServiceParams());
-		this.ctx.setAppendedParams(exec.getParameterMap());
-	}
+
 	
 }

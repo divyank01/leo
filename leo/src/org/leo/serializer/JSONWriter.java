@@ -95,6 +95,8 @@ public class JSONWriter {
 						builder.append(",");	
 				}
 				builder.append("]");
+			}else if(obj instanceof Number || obj instanceof String){
+				builder.append("{value:\""+obj+"\"}");
 			}
 		}catch(NoSuchMethodException ex){
 			throw new LeoSerializationException("Getter not available for field "

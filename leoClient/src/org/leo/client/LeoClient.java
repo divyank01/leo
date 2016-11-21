@@ -1,13 +1,24 @@
 package org.leo.client;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import com.thoughtworks.xstream.XStream;
 
 public class LeoClient {
 
@@ -17,13 +28,14 @@ public class LeoClient {
 		LeoClient client=new LeoClient();
 		try {
 			LeoRequest req=new LeoRequest();
-			req.setUrl("http://localhost:8080/LeoTest/rest/ProductProvider/product/electronics/");
+			req.setUrl("http://localhost:8080/LeoTest/rest/ProductProvider/product/prodId/");
 			req.setMethod("GET");
 			req.getAttributeMap().put("authkey", "some key");
 			req.getHeader().put("some in head", "thug life");
-			client.senRecieve(req);
+			LeoResponse resp=client.sendRecieve(req);
+			//System.out.println(new XStream().toXML(resp));
+			
 		}  catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -36,7 +48,8 @@ public class LeoClient {
 		return this;
 	}
 
-	private void senRecieve(LeoRequest req) throws Exception {
+	private LeoResponse sendRecieve(LeoRequest req) throws Exception {
+		LeoResponse resp=new LeoResponse();
 		URL obj = new URL(req.getUrl());
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod(req.getMethod());
@@ -45,10 +58,6 @@ public class LeoClient {
 			String key=itr.next();
 			con.setRequestProperty(key, req.getAttributeMap().get(key));
 		}
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + req.getUrl());
-		System.out.println("Response Code : " + responseCode);
-
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(con.getInputStream()));
 		String inputLine;
@@ -58,10 +67,14 @@ public class LeoClient {
 			response.append(inputLine);
 		}
 		in.close();
-
-		//print result
-		System.out.println(response.toString());
-
+		Map<String,List<String>> map = con.getHeaderFields();
+		for (String key : map.keySet()) {
+			resp.getHeader().put(key, map.get(key));
+		}
+		resp.setJson(response.toString());
+		resp.setInputStream(con.getInputStream());
+		resp.setStatusCode(con.getResponseCode());
+		return resp;
 	}
 
 	// HTTP POST request

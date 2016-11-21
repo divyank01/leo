@@ -2,13 +2,14 @@ package org.leo.client;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LeoResponse {
 
 	private int statusCode;
 	private String json;
-	private Map<String,String> header=new HashMap<>();
+	private Map<String,List<String>> header=new HashMap<>();
 	private InputStream inputStream;
 	public int getStatusCode() {
 		return statusCode;
@@ -22,12 +23,12 @@ public class LeoResponse {
 	public void setJson(String json) {
 		this.json = json;
 	}
-	public Map<String, String> getHeader() {
+	public Map<String, List<String>> getHeader() {
 		return header;
 	}
-	public void setHeader(Map<String, String> header) {
+	/*public void setHeader(Map<String, List<String>> header) {
 		this.header = header;
-	}
+	}*/
 	public InputStream getInputStream() {
 		return inputStream;
 	}

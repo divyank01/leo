@@ -51,4 +51,9 @@ public class ServiceContext {
 	protected void setAppendedParams(Map<String, String[]> parameterMap) {
 		this.appendedParm=(HashMap<String, String[]>) parameterMap;
 	}
+	
+	protected ServiceContext(Map<? extends Number, String> serviceParm, Map<String,String[]> appendedParm){
+		this.serviceParm=(HashMap<? extends Number, String>)serviceParm;
+		this.appendedParm=(HashMap<String, String[]>) appendedParm;
+	}
 }

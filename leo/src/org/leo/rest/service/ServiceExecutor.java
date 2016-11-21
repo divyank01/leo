@@ -24,16 +24,16 @@
   */
 package org.leo.rest.service;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.naming.ServiceUnavailableException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.leo.exception.ServiceUnavailableException;
+import org.leo.logging.Logger;
 import org.leo.rest.annotations.Get;
 import org.leo.rest.template.Template;
 import org.leo.rest.template.TemplateCollector;
@@ -64,6 +64,7 @@ public class ServiceExecutor {
 	protected Object execute(HttpServletRequest req)throws Exception{
 		Template template=null;
 		String[] serviceDetails=getServiceDetails(req);
+		Logger.log(req.getRequestURI());
 		template=TemplateCollector.getTemplate(serviceDetails[0]);
 		if(template!=null)
 			return _execute(template,serviceDetails[1],req);
@@ -89,6 +90,10 @@ public class ServiceExecutor {
 				service=instance.getClass();
 			}
 			Method method=service.getDeclaredMethod(data[0],null);
+			Class superClass=service;
+			while(!superClass.equals(LeoService.class))
+				superClass=superClass.getSuperclass();
+			Field ctx=superClass.getDeclaredField("ctx");
 			while(tokenizer.hasMoreTokens()){
 				count++;
 				String token=tokenizer.nextToken();
@@ -99,7 +104,9 @@ public class ServiceExecutor {
 			}
 			Get[] get=method.getAnnotationsByType(Get.class);
 			this.aParam=req.getParameterMap();
-			instance.updateServiceContext(this);
+			ctx.setAccessible(true);
+			ctx.set(instance, new ServiceContext(serviceParams,aParam));
+			ctx.setAccessible(false);
 			return method.invoke(instance, null);
 		}
 		throw new ServiceUnavailableException("No such service available!! \npath: "+mappingUrl);
