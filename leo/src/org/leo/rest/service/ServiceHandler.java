@@ -24,10 +24,14 @@
  */
 package org.leo.rest.service;
 
+
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.leo.exception.LeoSerializationException;
+import org.leo.exception.ServiceEx;
 import org.leo.rest.auth.AuthHandler;
 import org.leo.rest.auth.AuthToken;
 import org.leo.rest.auth.Authenticator;
@@ -43,6 +48,9 @@ import org.leo.rest.auth.LeoBasicAuthenticator;
 import org.leo.rest.servlet.ClassLoader;
 import org.leo.serializer.JSONWriter;
 import org.leo.serializer.LeoSerializable;
+import org.leo.models.ServiceResponse;
+
+import static org.leo.exception.ErrorHandler.handleEx;
 
 public class ServiceHandler {
 
@@ -62,13 +70,54 @@ public class ServiceHandler {
 	}
 
 	public void handle(HttpServletRequest req,HttpServletResponse resp) throws Exception{
+		if(req.getMethod().equals("GET")){
+			handleGet(req, resp);
+		}else if(req.getMethod().equals("POST")){
+			handlePost(req, resp);
+		}else if(req.getMethod().equals("PUT")){
+			
+		}else if(req.getMethod().equals("DELETE")){
+			
+		}
+	}
+	
+	private void handlePost(HttpServletRequest req,HttpServletResponse resp) throws Exception{
+		InputStream in=null;
+		InputStreamReader isr=null;
+		BufferedReader br=null;
+		try{
+			in=req.getInputStream();
+			isr=new InputStreamReader(in);
+			br=new BufferedReader(isr);
+			String str=null;
+			while((str=br.readLine())!=null){
+				//System.out.println(str);
+			}
+		}catch(Exception ex){
+			if(in!=null)
+				in.close();
+			if(isr!=null)
+				isr.close();
+			if(br!=null)
+				br.close();
+		}finally{
+			if(in!=null)
+				in.close();
+			if(isr!=null)
+				isr.close();
+			if(br!=null)
+				br.close();
+		}
+	}
+	
+	private void handleGet(HttpServletRequest req,HttpServletResponse resp) throws Exception{
 		try{
 			if(validate(req)){
 				resp.reset();
 				Object output=ServiceExecutor.getExecuter().execute(req);
 				if(output!=null && !(output instanceof File)){
 					if(isValid(output)){
-						String json=writer.getJson(output); 
+						String json=writer.getJson(new ServiceResponse(output,200)); 
 						resp.setBufferSize(json.length());
 						resp.getOutputStream().print(json);
 					}else{
@@ -100,9 +149,8 @@ public class ServiceHandler {
 				}
 			}
 		}catch(Exception e){
-			resp.setStatus(500);
-			resp.getWriter().print(e.getMessage());
-			e.printStackTrace();
+			handleEx(e,"Internal Error occured", resp,500,true);
+			throw e;
 		}
 	}
 

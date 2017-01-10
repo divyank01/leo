@@ -27,10 +27,20 @@ package org.leo.rest.service;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class ServiceContext {
 
 	private HashMap<? extends Number, String> serviceParm=new HashMap<>();
 	private HashMap<String,String[]> appendedParm=new HashMap<>();
+	private String jStr;
+	
+	protected String getJson(){
+		return this.jStr;
+	}
+	
+	protected void setJson(String jStr){
+		this.jStr=jStr;
+	}
 	
 	protected Map<? extends Number, String> getCloneParameters(){
 		return (Map<? extends Number, String>) this.serviceParm.clone();

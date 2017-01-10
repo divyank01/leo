@@ -64,14 +64,35 @@ public class ServiceExecutor {
 	protected Object execute(HttpServletRequest req)throws Exception{
 		Template template=null;
 		String[] serviceDetails=getServiceDetails(req);
-		Logger.log(req.getRequestURI());
+		Logger.log(req.getMethod()+":\t"+req.getRequestURI());
 		template=TemplateCollector.getTemplate(serviceDetails[0]);
-		if(template!=null)
-			return _execute(template,serviceDetails[1],req);
+		if(template!=null){
+			if(req.getMethod().equals("GET"))
+				return _executeGet(template,serviceDetails[1],req);
+			if(req.getMethod().equals("POST"))
+				return _executePost(template,serviceDetails[1],req);
+			if(req.getMethod().equals("PUT"))
+				return _executePut(template,serviceDetails[1],req);
+			if(req.getMethod().equals("DELETE"))
+				return _executeDelete(template,serviceDetails[1],req);
+			
+		}
 		throw new ServiceUnavailableException("template not found for service "+serviceDetails[0]);
 	}
 
-	private Object _execute(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
+	private Object _executePost(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
+		return null;
+	}
+	
+	private Object _executePut(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
+		return null;
+	}
+	
+	private Object _executeDelete(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
+		return null;
+	}
+	
+	private Object _executeGet(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
 		this.serviceParams=new HashMap<>();
 		this.aParam=new HashMap<>();
 		

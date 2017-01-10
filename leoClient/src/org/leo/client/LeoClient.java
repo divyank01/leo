@@ -24,6 +24,7 @@ public class LeoClient {
 
 	private String hostName;
 
+	private String url="";
 	public static void main(String[] args){
 		LeoClient client=new LeoClient();
 		try {
@@ -40,6 +41,14 @@ public class LeoClient {
 		}
 	}
 
+	private LeoClient(){}
+	
+	public static LeoClient createClient(String url) throws Exception{
+		LeoClient client=new LeoClient();
+		client.url=url;
+		return client;
+	}
+	
 	public void send(){
 
 	}
