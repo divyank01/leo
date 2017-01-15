@@ -93,7 +93,7 @@ public class ServiceHandler {
 			br=new BufferedReader(isr);
 			String str=null;
 			while((str=br.readLine())!=null){
-				System.out.println(str);
+				//System.out.println(str);
 			}
 		}catch(Exception ex){
 			if(in!=null)

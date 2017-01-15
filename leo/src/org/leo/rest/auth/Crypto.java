@@ -90,17 +90,4 @@ public class Crypto {
 		byte[] utf8 = dcipher.doFinal(dec);
 		return new String(utf8, "UTF8");
 	}
-	public static void main(String[] args){
-		Crypto c= new Crypto();
-		try {
-			c.init("keyFile");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			System.out.println(c.encrypt("babiliciousbebajanemanjanejana").length());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }
