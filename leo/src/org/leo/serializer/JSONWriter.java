@@ -24,26 +24,30 @@
  */
 package org.leo.serializer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.leo.exception.LeoSerializationException;
-import org.leo.models.ServiceResponse;
+import org.leo.rest.annotations.Serializable;
+
+import com.pojos.Prodcty;
 
 public class JSONWriter {
 
 	private StringBuilder buf=null;
 	private Set objects=null;
 
+	private static final String TERMINATE="*****";
+	
 	private String getString(){
 		return buf.toString();
 	}
@@ -90,11 +94,11 @@ public class JSONWriter {
 				builder.append("]");
 			}else if(obj instanceof Number || obj instanceof String){
 				builder.append("{value:\""+obj+"\"}");
-			}else if(obj instanceof LeoSerializable){
+			}else if(obj instanceof LeoSerializable || obj.getClass().getAnnotation(Serializable.class)!=null){
 				builder.append("{");
 				int counter=0;
-				if(!objects.contains(obj)){
-					objects.add(obj);
+				/*if(!objects.contains(obj)){
+					objects.add(obj);*/
 					Field[] list=obj.getClass().getDeclaredFields();
 					for(Field field:list){
 						builder.append("\"");
@@ -106,7 +110,7 @@ public class JSONWriter {
 						if(counter!=list.length)
 							builder.append(",");
 					}
-				}
+				//}
 				builder.append("}");
 			}
 		}catch(NoSuchMethodException ex){
@@ -145,7 +149,7 @@ public class JSONWriter {
 		while(itr.hasNext()){
 			Object obj=itr.next();
 			makeJson(builder, obj);
-			if(objects.contains(obj) && itr.hasNext())
+			if(/*objects.contains(obj) && */itr.hasNext())
 				builder.append(",");
 		}
 	}
@@ -184,64 +188,108 @@ public class JSONWriter {
 	}
 
 	/*
-	 * Json Mapiing to object
+	 * Json Mapping to object
+	 * Under construction
 	 */
 
-	public Object getObject(Class type,String json){
+	public Object getObject(Class type,String json) throws Exception{
 		StringBuffer sb=new StringBuffer(json);
-		getKeyVal(sb);
-
+		Object obj=type.newInstance();
+		while(sb.length()>2 || sb.indexOf(",")>=0){
+			System.out.println(key(sb));
+			System.out.println(val(sb));
+		}
 		return null;
 	}
 
-	private String getKeyVal(StringBuffer sb){
-		boolean isObj=false;
-		boolean isArr=false;
-		if(sb.length()>0){
-			for(int i=0;i<sb.length();i++){
-				int cIndex=sb.indexOf(":");
-				if(i==0 && sb.charAt(i)=='['){
-					sb=sb.deleteCharAt(i);
-				}
-				if(sb.charAt(i)=='{'){
-					sb=sb.deleteCharAt(i);
-					isObj=true;
-				}
-				if(isObj){
-					System.out.println(sb.substring(i, cIndex-1));
-					sb.delete(i, cIndex);
-					while(Character.isWhitespace(sb.charAt(i)))
-						i++;
-					if(sb.charAt(i)=='"'){
-						i++;
-						int start=i;
-						while((i+1<sb.length() && sb.charAt(i)!='"')
-								||(sb.charAt(i)=='"' && i+1<sb.length() &&
-								(sb.charAt(i+1)!=',' && sb.charAt(i+1)!='\n' && sb.charAt(i+1)!=' '))){
-							i++;
-						}
-						System.out.println(sb.substring(start, i));
-						sb.delete(start-1, i+1);
-					}
-				}
-				isObj=false;
-				//break;
-			}
-			System.out.println(sb);
-			return getKeyVal(sb);
-		}else
-			return sb.toString();
+	
+	private String key(StringBuffer sb){
+		int fStart=sb.indexOf("\"");
+		if(fStart<0){
+			sb.delete(0, sb.length());
+			return TERMINATE;
+		}
+		while(sb.charAt(fStart-1)=='\\')
+			fStart=sb.indexOf("\"",fStart+1);
+		int fEnd=sb.indexOf("\"",fStart+1);
+		while(sb.charAt(fEnd-1)=='\\')
+			fEnd=sb.indexOf("\"",fEnd+1);
+		String retVal=sb.substring(fStart+1, fEnd);
+		sb.delete(0, fEnd+1);
+		return retVal;
 	}
+	
+	private Object val(StringBuffer sb){
+		int separator = sb.indexOf(":")+1;
+		boolean isObject=false;
+		boolean isArray=false;
+		boolean isStr=false;
+		boolean isInt=false;
+		boolean isBool=false;
+	
+		while(sb.charAt(separator)==' ')
+			separator++;
+		char curr=sb.charAt(separator);
+		if(curr=='{'){
+			isObject=true;
+		}	
+		else if(curr=='['){
+			isArray=true;
+		}
+		else if(curr=='"'){
+			isStr=true;
+		}else if(!isStr && Character.isAlphabetic(curr)){
+			if(curr=='f')
+				return "false";
+			else if(curr=='t')
+				return "true";
+			else
+				return "null";
+		}
+		else{
+			isInt=true;
+		}
+		if(isStr){
+			return key(sb);
+		}else if(isObject){
+			//return getObject(null,sb).toString();
+		}else if(isInt){
+			int tmpPointer=separator;
+			while(Character.isDigit(sb.charAt(separator))){
+				separator++;
+			}
+			String ret=sb.substring(tmpPointer, separator);
+			sb.delete(tmpPointer, separator);
+			return ret;
+		}else if(isArray){
+			int fStart=sb.indexOf("[")+1;
+			int fEnd=sb.indexOf("\"",fStart+1);		
+			return sb.substring(fStart+1, fEnd);
+		}
+		int fStart=sb.indexOf("")+1;
+		int fEnd=sb.indexOf("\"",fStart+1);		
+		return sb.substring(fStart+1, fEnd);
+	}
+	
 
 	public static void main(String[] args){
 		JSONWriter j=new JSONWriter();
+		File f=new File("/home/divyank/Desktop/test.txt");
+		
 		try {
-			System.out.println(j.getJson(new ServiceResponse("lol", 500)));
+			BufferedReader br=new BufferedReader(new FileReader(f));
+			j.getObject(Prodcty.class, br.readLine());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			//System.out.println(j.getJson(new ServiceResponse("lol", 500)));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//j.getObject(null, "{\"firstName\": \"ha\"rry\",\"lastName\":\"tester\",\"toEmail\":\"testtest@test.com\"}");
+		//j.getObject(null, "{\"firstName\": \"harry\",\"lastName\":\"tester\",\"toEmail\":\"testtest@test.com\"}");
 	}
 
 }

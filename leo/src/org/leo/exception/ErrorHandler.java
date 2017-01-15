@@ -1,3 +1,27 @@
+/**
+  *  Leo is an open source framework for REST APIs.
+  *
+  *  Copyright (C) 2016  @author Divyank Sharma
+  *
+  *  This program is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+  *  the Free Software Foundation, either version 3 of the License, or
+  *  (at your option) any later version.
+  *
+  *  This program is distributed in the hope that it will be useful,
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU General Public License for more details.
+  *
+  *  You should have received a copy of the GNU General Public License
+  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  *  
+  *  For details please read LICENSE file.
+  *  
+  *  In Addition to it if you find any bugs or encounter any issue you need to notify me.
+  *  I appreciate any suggestions to improve it.
+  *  @mailto: divyank01@gmail.com
+  */
 package org.leo.exception;
 
 import java.io.IOException;
@@ -28,11 +52,13 @@ public class ErrorHandler {
 		resp.setStatus(statusCode);
 		try {
 			if(writeJson){
-				resp.getWriter().println(writer.getJson(new ServiceResponse(message,statusCode)));
-				System.out.println(writer.getJson(new ServiceResponse(message,statusCode)));
+				if(message!=null && !(ex instanceof LeoExceptions))
+					resp.getWriter().println(writer.getJson(new ServiceResponse(message,statusCode)));
+				else
+					resp.getWriter().println(writer.getJson(new ServiceResponse(ex.getMessage(),statusCode)));
 			}
 			else{
-				if(message!=null)
+				if(message!=null && !(ex instanceof LeoExceptions))
 					resp.getWriter().println(message);
 				else
 					resp.getWriter().println(ex.getMessage());

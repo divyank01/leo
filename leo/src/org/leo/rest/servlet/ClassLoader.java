@@ -46,21 +46,23 @@ public class ClassLoader {
 	}
 
 	public void loadTemplates(String packageName){
-		if(!TemplateCollector.isLoaded()){
-			File file=new File(Thread.currentThread()
-					.getContextClassLoader()
-					.getResource(packageName.replaceAll("\\.", Character.toString(File.separatorChar)).trim())
-					.getFile());
-			for(File f:file.listFiles()){
-				if(!f.isHidden() && f.getName().endsWith(".class")){
-					try {
+		try {
+			if(!TemplateCollector.isLoaded()){
+				File file=new File(Thread.currentThread()
+						.getContextClassLoader()
+						.getResource(packageName.replaceAll("\\.", Character.toString(File.separatorChar)).trim())
+						.getFile());
+				for(File f:file.listFiles()){
+					if(!f.isHidden() && f.getName().endsWith(".class")){
 						Class clzz=Class.forName(packageName+"."+(f.getName().replaceAll("\\.class", "")));
 						_loadAnnotations(clzz);
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
 					}
 				}
 			}
+		} catch (Exception e) {
+			Exception ex=new Exception("Unable to load services from package "+packageName);
+			ex.setStackTrace(e.getStackTrace());
+			ex.printStackTrace();
 		}
 	}
 

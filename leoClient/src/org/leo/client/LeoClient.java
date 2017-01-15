@@ -29,12 +29,12 @@ public class LeoClient {
 		LeoClient client=new LeoClient();
 		try {
 			LeoRequest req=new LeoRequest();
-			req.setUrl("http://localhost:8080/LeoTest/rest/ProductProvider/product/prodId/");
+			req.setUrl("http://localhost:8080/LeoTest/rest/ProductProvider/electronics");
 			req.setMethod("GET");
 			req.getAttributeMap().put("authkey", "some key");
 			req.getHeader().put("some in head", "thug life");
 			LeoResponse resp=client.sendRecieve(req);
-			//System.out.println(new XStream().toXML(resp));
+			System.out.println(new XStream().toXML(resp));
 			
 		}  catch (Exception e) {
 			e.printStackTrace();

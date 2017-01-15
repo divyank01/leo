@@ -24,7 +24,7 @@
   */
 package org.leo.exception;
 
-public class ServiceUnavailableException extends Exception {
+public class ServiceUnavailableException extends LeoExceptions {
 
 	public ServiceUnavailableException(String msg){
 		super(msg);

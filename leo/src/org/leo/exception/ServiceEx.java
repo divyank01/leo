@@ -1,6 +1,6 @@
 package org.leo.exception;
 
-public class ServiceEx extends Exception {
+public class ServiceEx extends LeoExceptions {
 
 	public ServiceEx(String msg){
 		super(msg);

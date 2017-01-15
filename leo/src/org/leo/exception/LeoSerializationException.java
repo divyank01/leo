@@ -24,7 +24,7 @@
   */
 package org.leo.exception;
 
-public class LeoSerializationException extends Exception {
+public class LeoSerializationException extends LeoExceptions {
 
 	public LeoSerializationException(String msg){
 		super(msg);

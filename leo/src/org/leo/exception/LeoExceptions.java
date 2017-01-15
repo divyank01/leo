@@ -22,11 +22,16 @@
   *  I appreciate any suggestions to improve it.
   *  @mailto: divyank01@gmail.com
   */
-package org.leo.serializer;
+package org.leo.exception;
 
-/**
- * Just a marker inteface
- * @author divyank
- *
- */
-public interface LeoSerializable {}
+public class LeoExceptions extends Exception {
+
+	public LeoExceptions(String msg) {
+		super(msg);
+	}
+	
+	public LeoExceptions(Throwable t) {
+		super(t);
+	}
+
+}

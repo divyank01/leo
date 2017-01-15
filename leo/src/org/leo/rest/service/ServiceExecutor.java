@@ -27,6 +27,7 @@ package org.leo.rest.service;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -64,7 +65,7 @@ public class ServiceExecutor {
 	protected Object execute(HttpServletRequest req)throws Exception{
 		Template template=null;
 		String[] serviceDetails=getServiceDetails(req);
-		Logger.log(req.getMethod()+":\t"+req.getRequestURI());
+		Logger.info(req.getMethod()+":\t"+req.getRequestURI()+"\t"+getString(req));
 		template=TemplateCollector.getTemplate(serviceDetails[0]);
 		if(template!=null){
 			if(req.getMethod().equals("GET"))
@@ -130,7 +131,7 @@ public class ServiceExecutor {
 			ctx.setAccessible(false);
 			return method.invoke(instance, null);
 		}
-		throw new ServiceUnavailableException("No such service available!! \npath: "+mappingUrl);
+		throw new ServiceUnavailableException("No such service available!! path: "+mappingUrl);
 	}
 	
 	private String[] getServiceDetails(HttpServletRequest req){
@@ -143,5 +144,21 @@ public class ServiceExecutor {
 	
 	private boolean isSpringCtxAvailable(HttpServletRequest req) {
 		return req.getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT")==null?false:true;
+	}
+	
+	private String getString(HttpServletRequest req){
+		StringBuffer buff=new StringBuffer();
+		Map<String,String[]> m=req.getParameterMap();
+		Iterator<String> itr=m.keySet().iterator();
+		while(itr.hasNext()){
+			String key=itr.next();
+			String[] arr=m.get(key);
+			buff.append(key+"=");
+			for(String s:arr)
+				buff=arr.length>1?buff.append(s+","):buff.append(s);
+			if(itr.hasNext())
+				buff.append(", ");
+		}
+		return buff.toString();
 	}
 }

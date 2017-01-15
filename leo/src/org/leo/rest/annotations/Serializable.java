@@ -22,11 +22,17 @@
   *  I appreciate any suggestions to improve it.
   *  @mailto: divyank01@gmail.com
   */
-package org.leo.serializer;
+package org.leo.rest.annotations;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Just a marker inteface
+ * Just a marker interface
  * @author divyank
  *
  */
-public interface LeoSerializable {}
+@Retention(RetentionPolicy.RUNTIME)
+@Target({java.lang.annotation.ElementType.TYPE})
+public @interface Serializable {}

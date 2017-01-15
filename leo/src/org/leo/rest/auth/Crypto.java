@@ -95,13 +95,11 @@ public class Crypto {
 		try {
 			c.init("keyFile");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
 			System.out.println(c.encrypt("babiliciousbebajanemanjanejana").length());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

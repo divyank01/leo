@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.leo.exception.LeoSerializationException;
 import org.leo.exception.ServiceEx;
+import org.leo.rest.annotations.Serializable;
 import org.leo.rest.auth.AuthHandler;
 import org.leo.rest.auth.AuthToken;
 import org.leo.rest.auth.Authenticator;
@@ -91,7 +93,7 @@ public class ServiceHandler {
 			br=new BufferedReader(isr);
 			String str=null;
 			while((str=br.readLine())!=null){
-				//System.out.println(str);
+				System.out.println(str);
 			}
 		}catch(Exception ex){
 			if(in!=null)
@@ -110,6 +112,7 @@ public class ServiceHandler {
 		}
 	}
 	
+	@SuppressWarnings("all")
 	private void handleGet(HttpServletRequest req,HttpServletResponse resp) throws Exception{
 		try{
 			if(validate(req)){
@@ -147,6 +150,10 @@ public class ServiceHandler {
 				}else{
 					resp.sendError(404);
 				}
+			}else{
+				String json=writer.getJson(new ServiceResponse("Authentecation failed",500)); 
+				resp.setBufferSize(json.length());
+				resp.getOutputStream().print(json);
 			}
 		}catch(Exception e){
 			handleEx(e,"Internal Error occured", resp,500,true);
@@ -156,6 +163,7 @@ public class ServiceHandler {
 
 	private boolean isValid(Object output) {		
 		return output instanceof LeoSerializable ||
+				output.getClass().getAnnotation(Serializable.class)!=null||
 				output instanceof List || 
 				output instanceof Map || 
 				output.getClass().isArray() || 
@@ -183,7 +191,7 @@ public class ServiceHandler {
 		this.authClass=this.config.getInitParameter("authenticator");
 		this.keyFile=this.config.getInitParameter("keyFile");
 		String logging=this.config.getInitParameter("logging");
-		if(logging!=null || !logging.isEmpty()){
+		if(logging!=null && !logging.isEmpty()){
 			String[] logDetails=logging.trim().split(":");
 			boolean enabled=Boolean.valueOf(logDetails[0]);
 			if(enabled && logDetails.length>1){
