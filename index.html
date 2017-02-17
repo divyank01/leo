@@ -113,7 +113,7 @@
 			below:
 		<ul>
 			<li>Supports DES based authentication of tokens.</li>
-			<li>Able to serve textual and multimedia contents.</li>
+			<li>Able to serve json and multimedia contents.</li>
 			<li>Spring integration for service.</li>
 			<li>User customizable authenticator.</li>
 			<li>No dependency on any other external library.</li>
@@ -185,6 +185,19 @@
 
 <h3 id="mapping">Service</h3>
 		<p>Service class will be recognized only if resides in correct package provided in config.
+		On server startup service package will be loaded.</br>
+		For GET:</br>
+		Service method can return data as list, String, Stream or a File.</br>
+		Objects returned from service method need to implement <code>org.leo.serializer.LeoSerializable</code> or need annotation of type <code>org.leo.rest.annotations.Serializable</code> 
+		resources can be fetched through console as following.
+		<code>curl http://localhost:8080/LeoTest/rest/ProductProvider/electronics -H authToken:J/Zywd8kibbTgQrE3hSzng== > ~/Desktop/ab.json</code>
+		
+		</br>For POST:</br>
+		Posted resource will be injected to service method by calling getStream() method. Stream then can be converted to file or json
+		resources can be posted through console as following.
+		<code>curl -H authToken:J/Zywd8kibbTgQrE3hSzng== -H Content-Type:application/json -X POST -d @/home/divyank/Desktop/ab.json http://localhost:8080/LeoTest/rest/ProductProvider/product/electronics/add
+		</code>
+		
 		<pre>
 			<code>
 package com.service;
