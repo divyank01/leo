@@ -24,6 +24,7 @@
   */
 package org.leo.rest.service;
 
+import java.io.InputStream;
 import java.util.Map;
 
 public class LeoService {
@@ -48,5 +49,8 @@ public class LeoService {
 		return ctx.getCloneAppendedParams();
 	}
 
+	public final InputStream getStream(){
+		return ctx.getStream();
+	}
 	
 }

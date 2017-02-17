@@ -66,7 +66,6 @@ public class Crypto {
 			br=new BufferedReader(fr);
 			factory= SecretKeyFactory.getInstance("DES");
 			String val=br.readLine();
-			System.out.println(val);
 			spec= new DESKeySpec(val.getBytes());
 			key=factory.generateSecret(spec);
 			ecipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
@@ -89,5 +88,17 @@ public class Crypto {
 		byte[] dec = decoder.decodeBuffer(str);
 		byte[] utf8 = dcipher.doFinal(dec);
 		return new String(utf8, "UTF8");
+	}
+	
+	public static void main(String... args){
+		Crypto c=new Crypto();
+		try {
+			c.init("keyFile");
+			System.out.println(c.encrypt("1576845t983542"));
+			System.out.println(c.decrypt(c.encrypt("1576845t983542")));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

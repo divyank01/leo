@@ -24,6 +24,7 @@
   */
 package org.leo.rest.service;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,8 @@ public class ServiceContext {
 
 	private HashMap<? extends Number, String> serviceParm=new HashMap<>();
 	private HashMap<String,String[]> appendedParm=new HashMap<>();
+	private InputStream inputStream;
+	private String contentType;
 	private String jStr;
 	
 	protected String getJson(){
@@ -62,8 +65,14 @@ public class ServiceContext {
 		this.appendedParm=(HashMap<String, String[]>) parameterMap;
 	}
 	
-	protected ServiceContext(Map<? extends Number, String> serviceParm, Map<String,String[]> appendedParm){
+	protected ServiceContext(Map<? extends Number, String> serviceParm, Map<String,String[]> appendedParm,InputStream in,String contentType){
 		this.serviceParm=(HashMap<? extends Number, String>)serviceParm;
 		this.appendedParm=(HashMap<String, String[]>) appendedParm;
+		this.inputStream=in;
+		this.contentType=contentType;
+	}
+	
+	protected InputStream getStream(){
+		return this.inputStream;
 	}
 }

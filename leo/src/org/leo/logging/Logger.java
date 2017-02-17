@@ -35,24 +35,24 @@ public class Logger {
 	
 	private static boolean doLog=true;
 	
-	private static final String APPENDER="leoLogAppender";
-	
 	private static final String C="console";
 	
 	private static final String F="file";
 	
-	private static final String FOLDER="leoLogFolder";
+	protected static String appender;
+	
+	protected static String folder;
 	
 	private static java.util.logging.Logger LOGGER=java.util.logging.Logger.getLogger("");
 	
 	private static StreamHandler handler= null;
-	static{
+	
+	protected static void load(){
 		try {
 			LOGGER=java.util.logging.Logger.getLogger("");
 			for(Handler h:LOGGER.getHandlers()){
 				LOGGER.removeHandler(h);
 			}			
-			String appender=System.getProperty(APPENDER);
 			doLog=Boolean.valueOf(appender!=null);
 			if(doLog){
 				LOGGER.setUseParentHandlers(false);
@@ -60,11 +60,10 @@ public class Logger {
 					handler=new ConsoleHandler();
 				}
 				if(appender.equals(F)){
-					handler=new FileHandler(System.getProperty(FOLDER),1024000,10,true);
+					handler=new FileHandler(Logger.folder,1024000,10,true);
 				}
 				LOGGER.addHandler(handler);
 				handler.setFormatter(new LoggingFormatter());
-				//handler.close();	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.leo.logging.Logger;
 import org.leo.rest.service.ServiceHandler;
 
 
@@ -52,7 +53,7 @@ public class LeoServlet extends HttpServlet{
 		try {
 			serviceHandler.handle(req,resp);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.severe(e.getMessage());
 		}
 	}
 	
@@ -61,7 +62,7 @@ public class LeoServlet extends HttpServlet{
 		try {
 			serviceHandler.handle(req,resp);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.severe(e.getMessage());
 		}
 	}
 	

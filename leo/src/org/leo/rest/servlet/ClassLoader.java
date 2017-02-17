@@ -36,7 +36,13 @@ import org.leo.rest.template.TemplateCollector;
 public class ClassLoader {
 
 	private static ClassLoader loader;
-
+	private static final String CLASS=".class";
+	private static final String DOT="\\.";
+	private static final String _DOT=".";
+	private static final String DOT_CLASS="\\.class";
+	private static final String SLASH="/";
+	private static final String LOAD_ERR="Unable to load services from package ";
+	
 	private ClassLoader(){}
 
 	protected static ClassLoader getInstance(){
@@ -50,17 +56,17 @@ public class ClassLoader {
 			if(!TemplateCollector.isLoaded()){
 				File file=new File(Thread.currentThread()
 						.getContextClassLoader()
-						.getResource(packageName.replaceAll("\\.", Character.toString(File.separatorChar)).trim())
+						.getResource(packageName.replaceAll(DOT, Character.toString(File.separatorChar)).trim())
 						.getFile());
 				for(File f:file.listFiles()){
-					if(!f.isHidden() && f.getName().endsWith(".class")){
-						Class clzz=Class.forName(packageName+"."+(f.getName().replaceAll("\\.class", "")));
+					if(!f.isHidden() && f.getName().endsWith(CLASS)){
+						Class clzz=Class.forName(packageName+_DOT+(f.getName().replaceAll(DOT_CLASS, "")));
 						_loadAnnotations(clzz);
 					}
 				}
 			}
 		} catch (Exception e) {
-			Exception ex=new Exception("Unable to load services from package "+packageName);
+			Exception ex=new Exception(LOAD_ERR+packageName);
 			ex.setStackTrace(e.getStackTrace());
 			ex.printStackTrace();
 		}
@@ -69,7 +75,7 @@ public class ClassLoader {
 	private void _loadAnnotations(Class clzz) {
 		Annotation[] _aClass=clzz.getAnnotations();
 		Template template=null;
-		String serviceName="/";
+		String serviceName=SLASH;
 		boolean isService=false;;
 		for(Annotation a:_aClass){
 			if(a instanceof Service){
@@ -86,7 +92,7 @@ public class ClassLoader {
 					for(Annotation a:_mClass){
 						if(a instanceof Path){
 							template.getMapping().put(((Path)a).urlPath(), m.getName());
-							TemplateCollector.addMapping(serviceName+"/"+((Path)a).urlPath(), m.getName());
+							TemplateCollector.addMapping(serviceName+SLASH+((Path)a).urlPath(), m.getName());
 						}
 					}
 				}

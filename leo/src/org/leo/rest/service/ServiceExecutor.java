@@ -82,7 +82,7 @@ public class ServiceExecutor {
 	}
 
 	private Object _executePost(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
-		return null;
+		return this.serve(template, mappingUrl, req);
 	}
 	
 	private Object _executePut(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
@@ -94,14 +94,16 @@ public class ServiceExecutor {
 	}
 	
 	private Object _executeGet(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
+		return this.serve(template, mappingUrl, req);
+	}
+	
+	private Object serve(Template template,String mappingUrl,HttpServletRequest req)throws Exception{
 		this.serviceParams=new HashMap<>();
 		this.aParam=new HashMap<>();
 		
 		String[] data=TemplateCollector.getMethod(mappingUrl).split(":");
 		if(data[0]!=null && !data[0].equals("null") && !data[0].isEmpty()){
 			StringTokenizer tokenizer=new StringTokenizer(mappingUrl, "/");
-			int count=0;
-			int i=0;
 			Class service=null;
 			LeoService instance=null;
 			if(!isSpringCtxAvailable(req)){
@@ -115,23 +117,29 @@ public class ServiceExecutor {
 			Class superClass=service;
 			while(!superClass.equals(LeoService.class))
 				superClass=superClass.getSuperclass();
+			setParams(mappingUrl, data);
 			Field ctx=superClass.getDeclaredField("ctx");
-			while(tokenizer.hasMoreTokens()){
-				count++;
-				String token=tokenizer.nextToken();
-				if(count>new Integer(data[1])){
-					this.serviceParams.put(i, token);
-					i++;
-				}
-			}
-			Get[] get=method.getAnnotationsByType(Get.class);
 			this.aParam=req.getParameterMap();
 			ctx.setAccessible(true);
-			ctx.set(instance, new ServiceContext(serviceParams,aParam));
+			ctx.set(instance, new ServiceContext(serviceParams,aParam,req.getInputStream(),req.getContentType()));
 			ctx.setAccessible(false);
 			return method.invoke(instance, null);
 		}
 		throw new ServiceUnavailableException("No such service available!! path: "+mappingUrl);
+	}
+	
+	private void setParams(String mappingUrl,String[] data){
+		StringTokenizer tokenizer=new StringTokenizer(mappingUrl, "/");
+		int count=0;
+		int i=0;
+		while(tokenizer.hasMoreTokens()){
+			count++;
+			String token=tokenizer.nextToken();
+			if(count>new Integer(data[1])){
+				this.serviceParams.put(i, token);
+				i++;
+			}
+		}
 	}
 	
 	private String[] getServiceDetails(HttpServletRequest req){

@@ -42,6 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.leo.exception.LeoSerializationException;
 import org.leo.exception.ServiceEx;
+import org.leo.logging.LogUtil;
+import org.leo.logging.Logger;
 import org.leo.rest.annotations.Serializable;
 import org.leo.rest.auth.AuthHandler;
 import org.leo.rest.auth.AuthToken;
@@ -77,41 +79,44 @@ public class ServiceHandler {
 		}else if(req.getMethod().equals("POST")){
 			handlePost(req, resp);
 		}else if(req.getMethod().equals("PUT")){
-			
+
 		}else if(req.getMethod().equals("DELETE")){
-			
+
 		}
 	}
-	
+
 	private void handlePost(HttpServletRequest req,HttpServletResponse resp) throws Exception{
 		InputStream in=null;
 		InputStreamReader isr=null;
 		BufferedReader br=null;
-		try{
-			in=req.getInputStream();
-			isr=new InputStreamReader(in);
-			br=new BufferedReader(isr);
-			String str=null;
-			while((str=br.readLine())!=null){
-				//System.out.println(str);
+		if(validate(req)){
+			Object output=ServiceExecutor.getExecuter().execute(req);
+			try{
+				in=req.getInputStream();
+				isr=new InputStreamReader(in);
+				br=new BufferedReader(isr);
+			}catch(Exception ex){
+				if(in!=null)
+					in.close();
+				if(isr!=null)
+					isr.close();
+				if(br!=null)
+					br.close();
+			}finally{
+				if(in!=null)
+					in.close();
+				if(isr!=null)
+					isr.close();
+				if(br!=null)
+					br.close();
 			}
-		}catch(Exception ex){
-			if(in!=null)
-				in.close();
-			if(isr!=null)
-				isr.close();
-			if(br!=null)
-				br.close();
-		}finally{
-			if(in!=null)
-				in.close();
-			if(isr!=null)
-				isr.close();
-			if(br!=null)
-				br.close();
+		}else{
+			String json=writer.getJson(new ServiceResponse("Authentecation failed",500)); 
+			resp.setBufferSize(json.length());
+			resp.getOutputStream().print(json);
 		}
 	}
-	
+
 	@SuppressWarnings("all")
 	private void handleGet(HttpServletRequest req,HttpServletResponse resp) throws Exception{
 		try{
@@ -195,9 +200,9 @@ public class ServiceHandler {
 			String[] logDetails=logging.trim().split(":");
 			boolean enabled=Boolean.valueOf(logDetails[0]);
 			if(enabled && logDetails.length>1){
-				System.setProperty("leoLogAppender", logDetails[1]);
+				LogUtil.setupLogging(logDetails[1], null);
 				if(logDetails.length>2)
-					System.setProperty("leoLogFolder", logDetails[2]);
+					LogUtil.setupLogging(logDetails[1], logDetails[2]);
 			}
 		}
 	}
@@ -209,7 +214,12 @@ public class ServiceHandler {
 	private Authenticator getAuthenticator() throws Exception{
 		if(this.authClass!=null && !this.authClass.isEmpty()){
 			Class clazz=Class.forName(this.authClass);
-			authenticator=(Authenticator)clazz.newInstance();
+			try{
+				authenticator=(Authenticator)clazz.newInstance();
+			}catch(Exception e){
+				Logger.severe("Invalid authenticator, class "+clazz.getName()+" is not a valid authenticator");
+				throw e;
+			}
 			return authenticator;
 		}
 		return null;

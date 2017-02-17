@@ -24,6 +24,8 @@
  */
 package org.leo.rest.auth;
 
+import org.leo.logging.Logger;
+
 public class AuthHandler {
 
 	private static AuthHandler handler=null;
@@ -36,9 +38,14 @@ public class AuthHandler {
 		return handler;
 	}
 	
-	public boolean isValidToken(Authenticator authenticator,AuthToken token,String keyFile) throws Exception{
-		crypto.init(keyFile);
-		return authenticator.validate(crypto.decrypt(token.getToken()));
+	public boolean isValidToken(Authenticator authenticator,AuthToken token,String keyFile){
+		try {
+			crypto.init(keyFile);
+			return authenticator.validate(crypto.decrypt(token.getToken()));
+		} catch (Exception e) {
+			Logger.severe(e.getMessage());
+		}
+		return false;
 	}
 
 	
