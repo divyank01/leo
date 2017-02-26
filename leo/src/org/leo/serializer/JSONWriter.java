@@ -29,7 +29,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -45,8 +47,7 @@ public class JSONWriter {
 
 	private StringBuilder buf=null;
 	private Set objects=null;
-
-	private static final String TERMINATE="*****";
+	private boolean a;
 	
 	private String getString(){
 		return buf.toString();
@@ -99,17 +100,17 @@ public class JSONWriter {
 				int counter=0;
 				/*if(!objects.contains(obj)){
 					objects.add(obj);*/
-					Field[] list=obj.getClass().getDeclaredFields();
-					for(Field field:list){
-						builder.append("\"");
-						builder.append(field.getName());
-						builder.append("\":");
-						fieldName=field.getName();
-						getValueForObject(obj.getClass().getMethod(getterName(field.getName()), null),obj,builder);
-						counter++;
-						if(counter!=list.length)
-							builder.append(",");
-					}
+				Field[] list=obj.getClass().getDeclaredFields();
+				for(Field field:list){
+					builder.append("\"");
+					builder.append(field.getName());
+					builder.append("\":");
+					fieldName=field.getName();
+					getValueForObject(obj.getClass().getMethod(getterName(field.getName()), null),obj,builder);
+					counter++;
+					if(counter!=list.length)
+						builder.append(",");
+				}
 				//}
 				builder.append("}");
 			}
@@ -187,109 +188,6 @@ public class JSONWriter {
 		return "get"+f.substring(0, 1).toUpperCase()+f.substring(1);
 	}
 
-	/*
-	 * Json Mapping to object
-	 * Under construction
-	 */
-
-	public Object getObject(Class type,String json) throws Exception{
-		StringBuffer sb=new StringBuffer(json);
-		Object obj=type.newInstance();
-		while(sb.length()>2 || sb.indexOf(",")>=0){
-			System.out.println(key(sb));
-			System.out.println(val(sb));
-		}
-		return null;
-	}
-
 	
-	private String key(StringBuffer sb){
-		int fStart=sb.indexOf("\"");
-		if(fStart<0){
-			sb.delete(0, sb.length());
-			return TERMINATE;
-		}
-		while(sb.charAt(fStart-1)=='\\')
-			fStart=sb.indexOf("\"",fStart+1);
-		int fEnd=sb.indexOf("\"",fStart+1);
-		while(sb.charAt(fEnd-1)=='\\')
-			fEnd=sb.indexOf("\"",fEnd+1);
-		String retVal=sb.substring(fStart+1, fEnd);
-		sb.delete(0, fEnd+1);
-		return retVal;
-	}
-	
-	private Object val(StringBuffer sb){
-		int separator = sb.indexOf(":")+1;
-		boolean isObject=false;
-		boolean isArray=false;
-		boolean isStr=false;
-		boolean isInt=false;
-		boolean isBool=false;
-	
-		while(sb.charAt(separator)==' ')
-			separator++;
-		char curr=sb.charAt(separator);
-		if(curr=='{'){
-			isObject=true;
-		}	
-		else if(curr=='['){
-			isArray=true;
-		}
-		else if(curr=='"'){
-			isStr=true;
-		}else if(!isStr && Character.isAlphabetic(curr)){
-			if(curr=='f')
-				return "false";
-			else if(curr=='t')
-				return "true";
-			else
-				return "null";
-		}
-		else{
-			isInt=true;
-		}
-		if(isStr){
-			return key(sb);
-		}else if(isObject){
-			//return getObject(null,sb).toString();
-		}else if(isInt){
-			int tmpPointer=separator;
-			while(Character.isDigit(sb.charAt(separator))){
-				separator++;
-			}
-			String ret=sb.substring(tmpPointer, separator);
-			sb.delete(tmpPointer, separator);
-			return ret;
-		}else if(isArray){
-			int fStart=sb.indexOf("[")+1;
-			int fEnd=sb.indexOf("\"",fStart+1);		
-			return sb.substring(fStart+1, fEnd);
-		}
-		int fStart=sb.indexOf("")+1;
-		int fEnd=sb.indexOf("\"",fStart+1);		
-		return sb.substring(fStart+1, fEnd);
-	}
-	
-
-	public static void main(String[] args){
-		JSONWriter j=new JSONWriter();
-		File f=new File("/home/divyank/Desktop/test.txt");
-		
-		try {
-			BufferedReader br=new BufferedReader(new FileReader(f));
-			j.getObject(Prodcty.class, br.readLine());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			//System.out.println(j.getJson(new ServiceResponse("lol", 500)));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//j.getObject(null, "{\"firstName\": \"harry\",\"lastName\":\"tester\",\"toEmail\":\"testtest@test.com\"}");
-	}
 
 }

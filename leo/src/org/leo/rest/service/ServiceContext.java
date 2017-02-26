@@ -24,9 +24,14 @@
   */
 package org.leo.rest.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.leo.serializer.JSONReader;
 
 
 public class ServiceContext {
@@ -36,6 +41,7 @@ public class ServiceContext {
 	private InputStream inputStream;
 	private String contentType;
 	private String jStr;
+	private static final JSONReader reader=new JSONReader();
 	
 	protected String getJson(){
 		return this.jStr;
@@ -75,4 +81,23 @@ public class ServiceContext {
 	protected InputStream getStream(){
 		return this.inputStream;
 	}
+	
+	protected Object getObject(Class clazz){
+		InputStream in=getStream();
+		InputStreamReader isr=new InputStreamReader(in);
+		BufferedReader br=new BufferedReader(isr);
+		String json=null;
+		StringBuffer sb=null;
+		try {
+			while((json=br.readLine())!=null){
+				sb=new StringBuffer(json);
+			}
+			return reader.getObject(clazz, reader.data(sb), null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null; 
+	}
+	
+	
 }

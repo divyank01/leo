@@ -101,7 +101,7 @@ public class ServiceExecutor {
 		this.serviceParams=new HashMap<>();
 		this.aParam=new HashMap<>();
 		
-		String[] data=TemplateCollector.getMethod(mappingUrl).split(":");
+		String[] data=TemplateCollector.getMethod(req.getMethod()+"/"+mappingUrl).split(":");
 		if(data[0]!=null && !data[0].equals("null") && !data[0].isEmpty()){
 			StringTokenizer tokenizer=new StringTokenizer(mappingUrl, "/");
 			Class service=null;

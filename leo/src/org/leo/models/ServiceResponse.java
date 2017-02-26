@@ -21,8 +21,12 @@ public class ServiceResponse implements LeoSerializable{
 		this.body=resp;
 	}
 	
+	public ServiceResponse(){}
+	
 	public static class Header implements LeoSerializable{
 		private int status;
+		
+		public Header(){}
 		
 		public Header(int status) {
 			super();
@@ -40,6 +44,8 @@ public class ServiceResponse implements LeoSerializable{
 	
 	public static class Response implements LeoSerializable{
 		private Object data;
+		
+		public Response(){}
 		
 		public Response(Object resp) {
 			super();

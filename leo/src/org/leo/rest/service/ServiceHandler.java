@@ -90,7 +90,11 @@ public class ServiceHandler {
 		InputStreamReader isr=null;
 		BufferedReader br=null;
 		if(validate(req)){
-			Object output=ServiceExecutor.getExecuter().execute(req);
+			try{
+				ServiceExecutor.getExecuter().execute(req);
+			}catch(Exception e){
+				handleEx(e, null, resp, 500,true);
+			}
 			try{
 				in=req.getInputStream();
 				isr=new InputStreamReader(in);
