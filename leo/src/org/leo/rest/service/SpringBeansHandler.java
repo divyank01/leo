@@ -24,10 +24,11 @@
   */
 package org.leo.rest.service;
 
+import java.lang.reflect.Method;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.leo.exception.ServiceUnavailableException;
-import org.springframework.web.context.WebApplicationContext;
 
 public class SpringBeansHandler {
 
@@ -39,17 +40,29 @@ public class SpringBeansHandler {
 			handler=new SpringBeansHandler();
 		return SpringBeansHandler.handler;
 	}
-
-	protected WebApplicationContext getSpringContext(HttpServletRequest req){
+	/**
+	 * Will return WebApplicationContext
+	 * @param req
+	 * @return
+	 */
+	protected /*WebApplicationContext*/ Object getSpringContext(HttpServletRequest req){
 		Object obj=req.getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
 		if(obj!=null)
-			return (WebApplicationContext)obj;
+			return obj;
 		return null;
 	}
-
+	/**
+	 * This method will get service bean from spring context
+	 * @param req
+	 * @param beanName
+	 * @return
+	 * @throws Exception
+	 */
 	protected LeoService getServiceBean(HttpServletRequest req,String beanName)throws Exception{
 		try{
-			LeoService service=(LeoService)getSpringContext(req).getBean(beanName);
+			Object webCtx=getSpringContext(req);
+			Method m=webCtx.getClass().getMethod("getBean", String.class);
+			LeoService service=(LeoService)m.invoke(webCtx, beanName);
 			if(service==null){
 				throw new ServiceUnavailableException(beanName+" named service is not available in spring ctx.");
 			}
