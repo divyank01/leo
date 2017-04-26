@@ -37,7 +37,7 @@ import org.leo.rest.annotations.Service;
 import org.leo.rest.template.Template;
 import org.leo.rest.template.TemplateCollector;
 
-import com.thoughtworks.xstream.XStream;
+//import com.thoughtworks.xstream.XStream;
 
 public class ClassLoader {
 

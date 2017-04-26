@@ -27,14 +27,12 @@ package org.leo.rest.auth;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 public class Crypto {
 
@@ -43,8 +41,8 @@ public class Crypto {
 	private SecretKey key;
 	private DESKeySpec spec;
 	private SecretKeyFactory factory;
-	private BASE64Encoder encoder=new BASE64Encoder();
-	private BASE64Decoder decoder=new BASE64Decoder();
+	private Base64.Encoder encoder=Base64.getEncoder();
+	private Base64.Decoder decoder=Base64.getDecoder();
 	
 	private static Crypto crypto;
 	private Crypto(){}
@@ -81,11 +79,11 @@ public class Crypto {
 	protected String encrypt(String str) throws Exception {
 		byte[] utf8 = str.getBytes("UTF8");
 		byte[] enc = ecipher.doFinal(utf8);
-		return encoder.encode(enc);
+		return encoder.encodeToString(enc);
 	}
 
 	protected String decrypt(String str) throws Exception {
-		byte[] dec = decoder.decodeBuffer(str);
+		byte[] dec = decoder.decode(str);
 		byte[] utf8 = dcipher.doFinal(dec);
 		return new String(utf8, "UTF8");
 	}

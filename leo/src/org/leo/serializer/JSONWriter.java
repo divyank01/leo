@@ -41,7 +41,7 @@ import java.util.Set;
 import org.leo.exception.LeoSerializationException;
 import org.leo.rest.annotations.Serializable;
 
-import com.pojos.Prodcty;
+//import com.pojos.Prodcty;
 
 public class JSONWriter {
 

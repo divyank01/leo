@@ -1,15 +1,8 @@
 package org.leo.client;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Iterator;
@@ -18,7 +11,10 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import com.thoughtworks.xstream.XStream;
+import org.leo.serializer.JSONReader;
+
+import com.pojos.Product;
+
 
 public class LeoClient {
 
@@ -29,32 +25,18 @@ public class LeoClient {
 		LeoClient client=new LeoClient();
 		try {
 			LeoRequest req=new LeoRequest();
-			req.setUrl("http://localhost:8080/LeoTest/rest/ProductProvider/electronics");
+			req.setUrl("http://localhost:8080/leo/rest/PS/GP?productid=505706");
 			req.setMethod("GET");
 			req.getAttributeMap().put("authkey", "some key");
 			req.getHeader().put("some in head", "thug life");
 			LeoResponse resp=client.sendRecieve(req);
-			System.out.println(new XStream().toXML(resp));
-			
+			JSONReader jr=new JSONReader();
+			Product p=(Product)jr.getObject(Product.class,jr.data(new StringBuffer(resp.getJson())),null);
+			System.out.println(resp.getJson());
+			System.out.println(p.getName());
 		}  catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private LeoClient(){}
-	
-	public static LeoClient createClient(String url) throws Exception{
-		LeoClient client=new LeoClient();
-		client.url=url;
-		return client;
-	}
-	
-	public void send(){
-
-	}
-
-	public LeoClient addAttribute(Object input){
-		return this;
 	}
 
 	private LeoResponse sendRecieve(LeoRequest req) throws Exception {
@@ -126,5 +108,22 @@ public class LeoClient {
 		System.out.println(response.toString());
 
 	}
+
+	private LeoClient(){}
+
+	public static LeoClient createClient(String url) throws Exception{
+		LeoClient client=new LeoClient();
+		client.url=url;
+		return client;
+	}
+
+	public void send(){
+
+	}
+
+	public LeoClient addAttribute(Object input){
+		return this;
+	}
+
 
 }

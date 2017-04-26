@@ -35,10 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.leo.models.ServiceResponse;
-
-import com.pojos.Prodcty;
-import com.thoughtworks.xstream.XStream;
 
 public class JSONReader {
 	/*
@@ -192,7 +188,7 @@ public class JSONReader {
 			//return getObject(null,sb).toString();
 		}else if(isInt){
 			int tmpPointer=separator;
-			while(Character.isDigit(sb.charAt(separator))){
+			while(sb.length() > separator && Character.isDigit(sb.charAt(separator))){
 				separator++;
 			}
 			String ret=sb.substring(tmpPointer, separator);
@@ -278,10 +274,10 @@ public class JSONReader {
 
 		try {
 			BufferedReader br=new BufferedReader(new FileReader(f));
-			Prodcty p=new Prodcty();
-			String s=p.getClass().getDeclaredField("stocks").getGenericType().getTypeName();
-			Object o=j.getObject(Prodcty.class, j.data(new StringBuffer(br.readLine())),null);
-			System.out.println(new XStream().toXML(o));
+			/*Product p=new Product();
+			//String s=p.getClass().getDeclaredField("stocks").getGenericType().getTypeName();
+			Object o=j.getObject(Product.class, j.data(new StringBuffer(br.readLine())),null);
+			System.out.println(o);*/
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

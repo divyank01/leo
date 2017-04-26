@@ -53,7 +53,7 @@ public class LeoService {
 		return ctx.getStream();
 	}
 	
-	public final Object getObject(Class clazz){
-		return ctx.getObject(clazz); 
+	public final <T,A extends Class> T getObject(A clazz){
+		return (T)ctx.getObject(clazz); 
 	}
 }
