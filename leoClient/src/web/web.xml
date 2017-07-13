@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+	<display-name>LeoClient</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+
+	<servlet>
+		<servlet-name>leo</servlet-name>
+		<servlet-class>org.leo.rest.servlet.LeoServlet</servlet-class>
+		<init-param>
+			<param-name>packageName</param-name>
+			<param-value>com.leo.service</param-value>
+		</init-param>
+
+		<!-- Set up custom authenticator for authtoken -->
+		<init-param>
+			<param-name>authenticator</param-name>
+			<param-value>com.auth.SampleAuthenticator</param-value>
+		</init-param>
+
+		<!-- location for key file -->
+		<init-param>
+			<param-name>keyFile</param-name>
+			<param-value>keyFile</param-value>
+		</init-param>
+
+		<!-- setup logging -->
+		<init-param>
+			<param-name>logging</param-name>
+			<param-value>true:file:/home/divyank/divyank/log/log</param-value>
+		</init-param>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>leo</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Setting up spring context --><!-- 
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/applicationContext.xml</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener> 
+ 	-->	
+
+
+</web-app>

@@ -68,12 +68,20 @@ public class LeoServlet extends HttpServlet{
 	
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doDelete(req, resp);
+		try {
+			serviceHandler.handle(req,resp);
+		} catch (Exception e) {
+			Logger.severe(e.getMessage());
+		}
 	}
 	
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPut(req, resp);
+		try {
+			serviceHandler.handle(req,resp);
+		} catch (Exception e) {
+			Logger.severe(e.getMessage());
+		}
 	}
 
 }

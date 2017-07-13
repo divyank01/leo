@@ -25,12 +25,13 @@ public class LeoClient {
 		LeoClient client=new LeoClient();
 		try {
 			LeoRequest req=new LeoRequest();
-			req.setUrl("http://localhost:8080/leo/rest/PS/GP?productid=505706");
+			req.setUrl("http://localhost:8080/LeoClient/rest/PS/OP?productid=505706&");
 			req.setMethod("GET");
-			req.getAttributeMap().put("authkey", "some key");
-			req.getHeader().put("some in head", "thug life");
+			req.getAttributeMap().put("authToken", "XQy/tg5mN6R0qTRJOf43mA==");
+			req.getHeader().put("authToken", "XQy/tg5mN6R0qTRJOf43mA==");
 			LeoResponse resp=client.sendRecieve(req);
 			JSONReader jr=new JSONReader();
+			System.out.println(resp.getJson());
 			Product p=(Product)jr.getObject(Product.class,jr.data(new StringBuffer(resp.getJson())),null);
 			System.out.println(resp.getJson());
 			System.out.println(p.getName());

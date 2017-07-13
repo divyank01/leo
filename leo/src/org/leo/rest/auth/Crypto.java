@@ -41,8 +41,8 @@ public class Crypto {
 	private SecretKey key;
 	private DESKeySpec spec;
 	private SecretKeyFactory factory;
-	private Base64.Encoder encoder=Base64.getEncoder();
-	private Base64.Decoder decoder=Base64.getDecoder();
+	private Base64.Encoder encoder=Base64.getMimeEncoder();
+	private Base64.Decoder decoder=Base64.getMimeDecoder();
 	
 	private static Crypto crypto;
 	private Crypto(){}
@@ -87,13 +87,17 @@ public class Crypto {
 		byte[] utf8 = dcipher.doFinal(dec);
 		return new String(utf8, "UTF8");
 	}
-	
+	/**
+	 * Testing function
+	 * @param args
+	 */
 	public static void main(String... args){
 		Crypto c=new Crypto();
 		try {
 			c.init("keyFile");
-			System.out.println(c.encrypt("1576845t983542"));
-			System.out.println(c.decrypt(c.encrypt("1576845t983542")));
+			System.out.println(c.encrypt("sjrhgwuivbsuegfivsdbfg"));
+			System.out.println(c.decrypt(c.encrypt("Is this the new shit..")));
+			System.out.println(c.decrypt("6xAuysEj7vWV+oy2qZqP6wXKTzCKKompmXfpbwWtk9sx2K6wyUWvtA=="));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

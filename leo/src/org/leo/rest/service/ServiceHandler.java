@@ -63,7 +63,7 @@ public class ServiceHandler {
 	private ServletConfig config;
 	private String keyFile;
 	private Authenticator authenticator;
-	AuthHandler authHandler=AuthHandler.getHandler();
+	private AuthHandler authHandler=AuthHandler.getHandler();
 	private JSONWriter writer=new JSONWriter();
 	protected ServiceHandler(){}
 
@@ -96,6 +96,7 @@ public class ServiceHandler {
 				handleEx(e, null, resp, 500,true);
 			}
 			try{
+				String contentType=req.getContentType();
 				in=req.getInputStream();
 				isr=new InputStreamReader(in);
 				br=new BufferedReader(isr);
@@ -115,9 +116,7 @@ public class ServiceHandler {
 					br.close();
 			}
 		}else{
-			String json=writer.getJson(new ServiceResponse("Authentecation failed",500)); 
-			resp.setBufferSize(json.length());
-			resp.getOutputStream().print(json);
+			handleInValidAuth(resp);
 		}
 	}
 
@@ -128,41 +127,16 @@ public class ServiceHandler {
 				resp.reset();
 				Object output=ServiceExecutor.getExecuter().execute(req);
 				if(output!=null && !(output instanceof File)){
-					if(isValid(output)){
-						String json=writer.getJson(new ServiceResponse(output,200)); 
-						resp.setBufferSize(json.length());
-						resp.getOutputStream().print(json);
-					}else{
-						throw new LeoSerializationException("Can not serialize "
-								+output.getClass().getCanonicalName()+" leoSeriazable not implemented");
-					}
-					resp.setStatus(200);
+					handleNonFileOut(output, resp);
 				}else if(output!=null && (output instanceof File || output instanceof InputStream)){
-					if(output instanceof File){//from FS
-						File file=(File)output;
-						FileInputStream fis=new FileInputStream(file);
-						int data=-20;
-						while((data=fis.read())!=-1)
-							resp.getOutputStream().write(data);
-						fis.close();
-					}
-					if(output instanceof InputStream){//getting data from data base blob
-						InputStream is=(InputStream)output;
-						int data=-20;
-						while((data=is.read())!=-1)
-							resp.getOutputStream().write(data);
-						is.close();
-					}
-					resp.setStatus(200);
+					handleFileIS(output, resp);
 				}else if(output==null){
 					resp.getOutputStream().print("{}");
 				}else{
 					resp.sendError(404);
 				}
 			}else{
-				String json=writer.getJson(new ServiceResponse("Authentecation failed",500)); 
-				resp.setBufferSize(json.length());
-				resp.getOutputStream().print(json);
+				handleInValidAuth(resp);
 			}
 		}catch(Exception e){
 			handleEx(e,"Internal Error occured", resp,500,true);
@@ -170,6 +144,43 @@ public class ServiceHandler {
 		}
 	}
 
+	private void handleInValidAuth(HttpServletResponse resp) throws Exception{
+		String json=writer.getJson(new ServiceResponse("Authentecation failed",500)); 
+		resp.setBufferSize(json.length());
+		resp.getOutputStream().print(json);
+	}
+	
+	private void handleFileIS(Object output,HttpServletResponse resp) throws Exception{
+		if(output instanceof File){//from FS
+			File file=(File)output;
+			FileInputStream fis=new FileInputStream(file);
+			int data=-20;
+			while((data=fis.read())!=-1)
+				resp.getOutputStream().write(data);
+			fis.close();
+		}
+		if(output instanceof InputStream){//getting data from data base blob
+			InputStream is=(InputStream)output;
+			int data=-20;
+			while((data=is.read())!=-1)
+				resp.getOutputStream().write(data);
+			is.close();
+		}
+		resp.setStatus(200);
+	}
+	
+	private void handleNonFileOut(Object output,HttpServletResponse resp) throws Exception{
+		if(isValid(output)){
+			String json=writer.getJson(new ServiceResponse(output,200)); 
+			resp.setBufferSize(json.length());
+			resp.getOutputStream().print(json);
+		}else{
+			throw new LeoSerializationException("Can not serialize "
+					+output.getClass().getCanonicalName()+" leoSeriazable not implemented");
+		}
+		resp.setStatus(200);
+	}
+	
 	private boolean isValid(Object output) {		
 		return output instanceof LeoSerializable ||
 				output.getClass().getAnnotation(Serializable.class)!=null||
@@ -204,7 +215,8 @@ public class ServiceHandler {
 			String[] logDetails=logging.trim().split(":");
 			boolean enabled=Boolean.valueOf(logDetails[0]);
 			if(enabled && logDetails.length>1){
-				LogUtil.setupLogging(logDetails[1], null);
+				if(logDetails.length==2)
+					LogUtil.setupLogging(logDetails[1], null);
 				if(logDetails.length>2)
 					LogUtil.setupLogging(logDetails[1], logDetails[2]);
 			}

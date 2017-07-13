@@ -29,6 +29,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.leo.models.ServiceResponse;
 import org.leo.serializer.JSONWriter;
+import static org.leo.logging.Logger.severe;
 
 public class ErrorHandler {
 
@@ -42,6 +43,7 @@ public class ErrorHandler {
 				resp.getWriter().println(message);
 			else
 				resp.getWriter().println(ex.getMessage());
+			severe(getMessage(ex, message));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,6 +52,7 @@ public class ErrorHandler {
 	public static void handleEx(Exception ex,String message,HttpServletResponse resp,int statusCode,boolean writeJson){
 		resp.reset();
 		resp.setStatus(statusCode);
+		
 		try {
 			if(writeJson){
 				if(message!=null && !(ex instanceof LeoExceptions))
@@ -63,6 +66,7 @@ public class ErrorHandler {
 				else
 					resp.getWriter().println(ex.getMessage());
 			}
+			severe(getMessage(ex, message));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -76,6 +80,7 @@ public class ErrorHandler {
 				resp.getWriter().println(message);
 			else
 				resp.getWriter().println(ex.getMessage());
+			severe(getMessage(ex, message));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -89,5 +94,15 @@ public class ErrorHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static String getMessage(Exception ex,String msg) {
+		StringBuilder sb=new StringBuilder("Excpetion ouccured:");
+		sb.append(ex.getCause().getClass().getCanonicalName());
+		for(StackTraceElement st:ex.getCause().getStackTrace()) {
+			sb.append('\n').append('\t');
+			sb.append(st.toString());
+		}
+		return sb.toString();
 	}
 }

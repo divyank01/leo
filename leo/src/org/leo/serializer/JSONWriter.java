@@ -94,7 +94,7 @@ public class JSONWriter {
 				}
 				builder.append("]");
 			}else if(obj instanceof Number || obj instanceof String){
-				builder.append("{value:\""+obj+"\"}");
+				builder.append(obj);//builder.append("{value:\""+obj+"\"}");
 			}else if(obj instanceof LeoSerializable || obj.getClass().getAnnotation(Serializable.class)!=null){
 				builder.append("{");
 				int counter=0;

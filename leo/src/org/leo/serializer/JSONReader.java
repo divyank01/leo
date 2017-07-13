@@ -109,20 +109,8 @@ public class JSONReader {
 		if(root instanceof List){
 			List list=(List)root;
 			try {
-				int countLB=1;
-				int countRB=0;
-				boolean flag=true;
-				while(countLB>=0 || flag){
-					if(sb.indexOf("[")>0){
-						if(sb.indexOf("[")<sb.indexOf("]")){
-							countLB++;
-						}
-					}
+				while(sb.indexOf(",")<sb.indexOf("]")) {
 					list.add(getObject(type, sb, null));
-					countLB--;
-					flag=false;
-					if(countLB==0)
-						return list;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -271,13 +259,13 @@ public class JSONReader {
 	public static void main(String[] args){
 		JSONReader j=new JSONReader();
 		File f=new File("/home/divyank/Desktop/test.txt");
-
+		//String str="{\"header\":{\"status\":200},\"body\":{\"data\":{\"name\":null,\"id\":0,\"price\":0,\"color\":null,\"description\":null,\"details\":{\"size\":null,\"details\":null},\"stock\":{\"id\":0,\"mappings\":[{\"id\":0,\"locId\":0},{\"id\":0,\"locId\":0},{\"id\":0,\"locId\":0},{\"id\":0,\"locId\":0},{\"id\":0,\"locId\":0},{\"id\":0,\"locId\":0},{\"id\":0,\"locId\":0}]}}}}\n";
 		try {
 			BufferedReader br=new BufferedReader(new FileReader(f));
-			/*Product p=new Product();
+			//Product p=new Product();
 			//String s=p.getClass().getDeclaredField("stocks").getGenericType().getTypeName();
-			Object o=j.getObject(Product.class, j.data(new StringBuffer(br.readLine())),null);
-			System.out.println(o);*/
+			//Object o=j.getObject(Product.class, j.data(new StringBuffer(br.readLine())),null);
+			//System.out.println(new XStream().toXML(o));
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

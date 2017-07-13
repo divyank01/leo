@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.leo.serializer.JSONReader;
@@ -73,7 +74,13 @@ public class ServiceContext {
 	
 	protected ServiceContext(Map<? extends Number, String> serviceParm, Map<String,String[]> appendedParm,InputStream in,String contentType){
 		this.serviceParm=(HashMap<? extends Number, String>)serviceParm;
-		this.appendedParm=(HashMap<String, String[]>) appendedParm;
+		this.appendedParm=new HashMap<>();
+		Iterator<String> itr=appendedParm.keySet().iterator();
+		while(itr.hasNext()) {
+			String key=itr.next();
+			this.appendedParm.put(key, appendedParm.get(key));
+		}
+		//this.appendedParm=(HashMap<String, String[]>) appendedParm;
 		this.inputStream=in;
 		this.contentType=contentType;
 	}
@@ -82,7 +89,7 @@ public class ServiceContext {
 		return this.inputStream;
 	}
 	
-	protected Object getObject(Class clazz){
+	protected Object getObject(Class type1,Class type2){
 		InputStream in=getStream();
 		InputStreamReader isr=new InputStreamReader(in);
 		BufferedReader br=new BufferedReader(isr);
@@ -92,7 +99,7 @@ public class ServiceContext {
 			while((json=br.readLine())!=null){
 				sb=new StringBuffer(json);
 			}
-			return reader.getObject(clazz, reader.data(sb), null);
+			return reader.getObject(type1, reader.data(sb), type2);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

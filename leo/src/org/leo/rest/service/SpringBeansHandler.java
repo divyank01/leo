@@ -33,6 +33,9 @@ import org.leo.exception.ServiceUnavailableException;
 public class SpringBeansHandler {
 
 	private static SpringBeansHandler handler;
+	private static final String CLASS="org.springframework.web.context.WebApplicationContext.ROOT";
+	private static final String METHOD="getBean";
+	private static final String MESSAGE=" named service is not available in spring ctx.";
 	private SpringBeansHandler(){}
 
 	public static SpringBeansHandler getHandler(){
@@ -45,11 +48,8 @@ public class SpringBeansHandler {
 	 * @param req
 	 * @return
 	 */
-	protected /*WebApplicationContext*/ Object getSpringContext(HttpServletRequest req){
-		Object obj=req.getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
-		if(obj!=null)
-			return obj;
-		return null;
+	protected Object getSpringContext(HttpServletRequest req){
+		return req.getServletContext().getAttribute(CLASS);
 	}
 	/**
 	 * This method will get service bean from spring context
@@ -61,14 +61,14 @@ public class SpringBeansHandler {
 	protected LeoService getServiceBean(HttpServletRequest req,String beanName)throws Exception{
 		try{
 			Object webCtx=getSpringContext(req);
-			Method m=webCtx.getClass().getMethod("getBean", String.class);
+			Method m=webCtx.getClass().getMethod(METHOD, String.class);
 			LeoService service=(LeoService)m.invoke(webCtx, beanName);
 			if(service==null){
-				throw new ServiceUnavailableException(beanName+" named service is not available in spring ctx.");
+				throw new ServiceUnavailableException(beanName+MESSAGE);
 			}
 			return service;
 		}catch(Exception e){
-			throw new ServiceUnavailableException(beanName+" named service is not available in spring ctx.");
+			throw new ServiceUnavailableException(beanName+MESSAGE);
 		}
 	}
 }
