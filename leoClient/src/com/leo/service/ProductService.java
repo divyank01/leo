@@ -29,6 +29,12 @@ public class ProductService extends LeoService {
 	}
 	
 	@Get
+	@Path(urlPath="/video")
+	public File getVideo() {
+		return new File("/home/divyank/Desktop/abc.mp4");
+	}
+	
+	@Get
 	@Path(urlPath="/img")
 	public File getImg() {
 		return new File("/home/divyank/Desktop/pp.jpg");
